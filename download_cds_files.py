@@ -3,7 +3,7 @@ import sys
 import os
 import wget
 from dotenv import load_dotenv
-
+import zipfile
 
 # Get credentials
 load_dotenv('.env')
@@ -14,9 +14,10 @@ client_id = os.getenv('client_id')
 
 # Request auth token
 url = domain + "oauth/token"
-payload = "client_secret={}&client_id={}&grant_type=client_credentials".format(client_secret, client_id)
+payload = "client_secret={}&client_id={}&grant_type=client_credentials".format(
+    client_secret, client_id)
 headers = {"content-type": "application/x-www-form-urlencoded"}
-response = requests.request("POST", url, data = payload, headers = headers)
+response = requests.request("POST", url, data=payload, headers=headers)
 if response.status_code != 200:
     print(response.text)
     sys.exit()
@@ -32,14 +33,19 @@ headers = {
     "Authorization": "Bearer " + access_token
 }
 response = requests.request("GET", url, headers=headers)
-print(response.text)
-print(response.status_code)
+# print(response.text)
+# print(response.status_code)
 
 for file_entry in response.json():
+    zip_path = os.path.join(os.getcwd(), "zip")
+    xml_path = os.path.join(os.getcwd(), "xml")
     filename = file_entry['filename']
     download_url = file_entry['downloadURL']
-    if os.path.isfile(filename):
+    zip_filename = os.path.join(zip_path, filename)
+    if os.path.isfile(zip_filename):
         print(f'{filename} already exists, skipping...')
     else:
         print(f'Downloading {filename}...')
-        wget.download(download_url, out='.', bar=None)
+        wget.download(download_url, out=zip_path, bar=None)
+        zfile = zipfile.ZipFile(zip_filename)
+        zfile.extractall(xml_path)
