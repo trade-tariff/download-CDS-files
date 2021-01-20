@@ -38,5 +38,8 @@ print(response.status_code)
 for file_entry in response.json():
     filename = file_entry['filename']
     download_url = file_entry['downloadURL']
-    print(f'Downloading {filename}...')
-    wget.download(download_url, out='.', bar=None)
+    if os.path.isfile(filename):
+        print(f'{filename} already exists, skipping...')
+    else:
+        print(f'Downloading {filename}...')
+        wget.download(download_url, out='.', bar=None)
