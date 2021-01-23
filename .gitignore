@@ -103,19 +103,10 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-log/
-import/
-xml_in/
-xml_out/
 __pycache__/
 csv/
 temp/
 .vscode/
 .DS_Store
-xml/
-csv/
 instructions.md
-dest/
-src/
-zip/
-xml/
+resources/
