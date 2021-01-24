@@ -92,8 +92,12 @@ class MeasureComponent(Master):
         elif self.duty_expression_id in ("29"):
             self.duty_string += " + FDR"
 
+        elif self.duty_expression_id in ("99"):
+            self.duty_string += self.measurement_unit_code
+
         else:
             print("Found an unexpected DE", self.duty_expression_id)
+
 
         self.duty_string = self.duty_string.replace("  ", " ")
         a = 1

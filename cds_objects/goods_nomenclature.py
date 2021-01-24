@@ -59,4 +59,5 @@ class GoodsNomenclature(Master):
                 obj = GoodsNomenclatureDescription(self.md_file, description)
                 if obj.tbl is not None:
                     self.descriptions += obj.tbl
-                self.description_string += obj.description_string
+                # self.description_string += obj.description_string
+                self.description_string = obj.description_string
