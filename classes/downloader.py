@@ -4,6 +4,7 @@ import os
 import wget
 from dotenv import load_dotenv
 import zipfile
+from shutil import copyfile
 from classes.cds_file import CdsFile
 
 
@@ -14,6 +15,7 @@ class Downloader(object):
         self.domain = os.getenv('domain')
         self.client_secret = os.getenv('client_secret')
         self.client_id = os.getenv('client_id')
+        self.IMPORT_FOLDER = os.getenv('IMPORT_FOLDER')
         self.cds_files = []
 
         self.get_access_token()
@@ -58,6 +60,7 @@ class Downloader(object):
             filename = file_entry.filename
             download_url = file_entry.download_url
             zip_filename = os.path.join(zip_path, filename)
+            
             if os.path.isfile(zip_filename):
                 print(f'{filename} already exists, skipping...')
             else:
@@ -65,3 +68,14 @@ class Downloader(object):
                 wget.download(download_url, out=zip_path, bar=None)
                 zfile = zipfile.ZipFile(zip_filename)
                 zfile.extractall(xml_path)
+                unzipped_files = zfile.filelist
+                if unzipped_files:
+                    xml_filename = unzipped_files[0].filename
+
+                    # Copy to the import folder for running the import
+                    src = os.path.join(xml_path, xml_filename)
+                    dest = os.path.join(self.IMPORT_FOLDER, "CDS")
+                    dest = os.path.join(dest, xml_filename)
+                    copyfile(src, dest)
+                else:
+                    print("There was a problem in unzipping that archive.")
