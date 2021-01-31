@@ -29,6 +29,7 @@ class XmlFile(object):
         # Create the Excel
         g.excel = Excel()
         g.excel.create_excel(self.path, self.filename)
+        print("Creating file", self.filename.replace("xml", "xlsx"))
 
         self.create_markdown_file()  # Create the markdown file
         tree = ET.parse(self.file_path)
@@ -247,6 +248,7 @@ class XmlFile(object):
         self.md_file.new_table(columns=2, rows=5, text=tbl, text_align='left')
 
     def convert_to_html(self):
+        return
         self.html_path = self.path.replace("xml", "html")
         self.html_filename = self.filename.replace("xml", "html")
         self.html_filename = os.path.join(self.html_path, self.html_filename)
@@ -262,7 +264,7 @@ class XmlFile(object):
         css_file = os.path.join(os.getcwd(), "css")
         css_file = os.path.join(css_file, "custom.css")
 
-        os.system("pandoc --quiet '" + self.md_filename + "' -f markdown -t html -s -o  '" + self.html_filename + "'")
-        os.system("pandoc --quiet '" + self.md_filename + "' -f markdown -t docx -s -o  '" + self.docx_filename + "'")
+        # os.system("pandoc --quiet '" + self.md_filename + "' -f markdown -t html -s -o  '" + self.html_filename + "'")
+        # os.system("pandoc --quiet '" + self.md_filename + "' -f markdown -t docx -s -o  '" + self.docx_filename + "'")
 
 
