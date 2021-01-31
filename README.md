@@ -7,6 +7,15 @@
   `python3 -m venv venv/`
   `source venv/bin/activate`
 
+- Environment variable settings
+
+  - domain=root domain from which to download GZIP files
+  - client_secret
+  - client_id
+  - DATABASE_UK=postgres connection string
+  - IMPORT_FOLDER=folder to which to copy files, for import
+  - OVERWRITE_XLSX=0|1 - 0 will run parser on all files; 1 will only parse files that are missing
+
 - Install necessary Python modules 
 
   - appdirs==1.4.4

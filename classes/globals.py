@@ -4,6 +4,7 @@ from classes.reference_data import ActionCodeList, MeasureTypeList, ConditionCod
 # Get a list of all geo areas
 obj = GeographyList()
 geography_dict = obj.geography_dict
+geography_hjid_dict = obj.geography_hjid_dict
 
 # Get a list of all measure types
 obj = MeasureTypeList()
