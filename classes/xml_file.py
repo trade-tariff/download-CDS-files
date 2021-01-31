@@ -14,6 +14,7 @@ from cds_objects.measure import Measure
 from cds_objects.goods_nomenclature import GoodsNomenclature
 from cds_objects.quota_order_number import QuotaOrderNumber
 from cds_objects.quota_definition import QuotaDefinition
+from cds_objects.geographical_area import GeographicalArea
 from classes.excel import Excel
 
 
@@ -44,6 +45,7 @@ class XmlFile(object):
         self.get_commodities()
         self.get_quota_order_numbers()
         self.get_quota_definitions()
+        self.get_geographical_areas()
 
         self.table_of_contents()
         self.save_markdown_file()  # Save the markdown file
@@ -187,6 +189,39 @@ class XmlFile(object):
             for quota in quotas:
                 row_count += 1
                 QuotaOrderNumber(self.md_file, quota, worksheet, row_count)
+
+    def get_geographical_areas(self):
+        row_count = 0
+        geographical_areas = self.root.find('.//findGeographicalAreaByDatesResponse')
+        if geographical_areas:
+            # Write Excel column headers
+            worksheet = g.excel.workbook.add_worksheet("Geographical areas")
+            data = (
+                'Action', 'Geographical area ID', 'SID',
+                "Start date", 'End date',
+                'Description(s)', 'Current memberships', 'All memberships', 'Parent group SID')
+            widths = [30,20,15,15,20,50,70,70,15]
+            worksheet.write_row('A1', data, g.excel.format_bold)
+            for i in range(0, len(widths)):
+                worksheet.set_column(i, i, widths[i])
+            worksheet.freeze_panes(1, 0)
+
+            # Get data
+            geographical_areas = geographical_areas.findall("GeographicalArea")
+            geographical_area_objects = []
+            for geographical_area in geographical_areas:
+                row_count += 1
+                geographical_area_object = GeographicalArea(self.md_file, geographical_area, worksheet, row_count)
+                geographical_area_objects.append(geographical_area_object)
+
+            geographical_area_objects = sorted(geographical_area_objects, key=lambda x: x.geographical_area_id, reverse=False)
+
+            row_count = 1
+            for geographical_area_object in geographical_area_objects:
+                geographical_area_object.row_count = row_count
+                geographical_area_object.write_data()
+                row_count += 1
+
 
     def get_quota_definitions(self):
         row_count = 0

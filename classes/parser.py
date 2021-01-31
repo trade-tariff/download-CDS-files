@@ -31,5 +31,3 @@ class Parser(object):
         xlsx_filename = os.path.join(self.xlsx_path, filename)
         exists = os.path.exists(xlsx_filename)
         return exists
-        a = 1
-        pass
