@@ -17,3 +17,7 @@ action_code_dict = obj.action_code_dict
 # Get a list of all condition codes
 obj = ConditionCodeList()
 condition_code_dict = obj.condition_code_dict
+
+change_list = []
+code_lists = []
+definition_list = {}

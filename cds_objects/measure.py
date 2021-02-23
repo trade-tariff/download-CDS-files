@@ -1,6 +1,8 @@
 import sys
 from classes.master import Master
 import classes.globals as g
+
+from cds_objects.change import MeasureChange
 from cds_objects.measure_component import MeasureComponent
 from cds_objects.measure_condition import MeasureCondition
 from cds_objects.measure_excluded_geographical_area import MeasureExcludedGeographicalArea
@@ -51,6 +53,9 @@ class Measure(Master):
         self.get_measure_conditions()
         self.get_measure_excluded_geographical_areas()
         self.get_footnotes()
+        
+        change = MeasureChange(self.measure_sid, self.goods_nomenclature_item_id, "Measure", self.operation)
+        g.change_list.append(change)
 
     def get_geographical_area_description(self):
         self.geographical_area_description = g.geography_dict[self.geographical_area_id]

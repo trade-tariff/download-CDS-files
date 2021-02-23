@@ -2,6 +2,7 @@ import sys
 from classes.master import Master
 from cds_objects.goods_nomenclature_description import GoodsNomenclatureDescription
 import classes.globals as g
+from cds_objects.change import CommodityChange
 
 
 class GoodsNomenclature(Master):
@@ -27,6 +28,9 @@ class GoodsNomenclature(Master):
         self.validity_end_date = Master.process_null(
             self.elem.find("validityEndDate"))
         self.get_descriptions()
+        
+        change = CommodityChange(self.goods_nomenclature_sid, self.goods_nomenclature_item_id, self.product_line_suffix, "Commodity", self.operation)
+        g.change_list.append(change)
 
     def write_data(self):
         # Write the markdown
@@ -59,5 +63,4 @@ class GoodsNomenclature(Master):
                 obj = GoodsNomenclatureDescription(self.md_file, description)
                 if obj.tbl is not None:
                     self.descriptions += obj.tbl
-                # self.description_string += obj.description_string
                 self.description_string = obj.description_string

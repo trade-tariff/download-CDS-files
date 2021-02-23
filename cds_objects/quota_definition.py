@@ -3,6 +3,7 @@ from classes.master import Master
 from classes.database import Database
 import classes.globals as g
 from cds_objects.quota_balance_event import QuotaBalanceEvent
+from cds_objects.change import QuotaDefinitionChange
 
 
 class QuotaDefinition(Master):
@@ -32,6 +33,9 @@ class QuotaDefinition(Master):
         self.validity_end_date = Master.process_null(self.elem.find("validityEndDate"))
         self.get_balance_events()
         self.get_sample_comm_codes()
+
+        change = QuotaDefinitionChange(self.sid, "Quota definition", self.operation)
+        g.change_list.append(change)
 
     def get_sample_comm_codes(self):
         sql = "select distinct(goods_nomenclature_item_id) from measures where ordernumber = '" + self.quota_order_number_id + "' order by 1 limit 5"
