@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 import classes.globals as g
 from mdutils.mdutils import MdUtils
 from mdutils import Html
+from classes.sendgrid_mailer import SendgridMailer
 
 import classes.functions as func
 from cds_objects.footnote_type import FootnoteType
@@ -51,14 +52,30 @@ class XmlFile(object):
         self.table_of_contents()
         self.save_markdown_file()  # Save the markdown file
         self.convert_to_html()  # Convert file to html
-        # g.excel.close_excel()
+        g.excel.close_excel()
 
         self.write_changes()
+        
+        self.mail_extract()
+        
+    def mail_extract(self):
+        edition = self.execution_date.split("T")[0]
+        html_content = """
+        <p>Dear all,</p>
+        <p>Please find attached the latest CDS updates in Excel format for {edition}.</p>
+        <p>This data was loaded to the Online Tariff by 05:00 on {edition}.</p>
+        <p>Thanks,</p>
+        <p>The Online Tariff Team.</p>""".format(edition = edition)
+        
+        subject = "CDS data load " + edition
+        s = SendgridMailer(subject, html_content, g.excel.excel_filename)
+        s.send()
+
 
     def write_changes(self):
         self.json_path = self.path.replace("xml", "json")
         temp = self.filename.split("T")[0] + ".json"
-        self.json_filename = temp # self.filename.replace("xml", "json")
+        self.json_filename = temp
         self.json_filename = os.path.join(self.json_path, self.json_filename)
 
         my_dict = {}
@@ -96,8 +113,6 @@ class XmlFile(object):
         my_string = json.dumps(my_dict, indent=2, sort_keys=False)
         f.write(my_string)
         f.close()
-
-        sys.exit()
 
     def table_of_contents(self):
         self.md_file.new_table_of_contents(table_title='Contents', depth=1)

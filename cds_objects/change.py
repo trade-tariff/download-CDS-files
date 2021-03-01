@@ -23,39 +23,42 @@ class MeasureChange(object):
         self.get_end_lines()
         
     def get_end_lines(self):
-        code_key = "codes_" + self.goods_nomenclature_item_id[0]
-        code_list = g.code_lists[code_key]
-        found = False
-        is_leaf = False
-        index = -1
-        number_indents = None
-        if self.goods_nomenclature_item_id == "0102210000":
-            a = 1
-            
-        for code in code_list:
-            index += 1
-            if (code.goods_nomenclature_item_id == self.goods_nomenclature_item_id) and (str(code.productline_suffix) == "80"):
-                found = True
-                if self.goods_nomenclature_item_id[-8:] == "00000000":
-                    number_indents = -1
-                else:
-                    number_indents = code.number_indents
-    
-                if int(code.leaf) == 1:
-                    is_leaf = True
-                break
-
-        if is_leaf == False and found == True:
-            for loop in range(index + 1, len(code_list) - 1):
-                next_code = code_list[loop]
-                if next_code.leaf == 1:
-                    self.impacted_end_lines.append(next_code.goods_nomenclature_item_id)
+        try:
+            code_key = "codes_" + self.goods_nomenclature_item_id[0]
+            code_list = g.code_lists[code_key]
+            found = False
+            is_leaf = False
+            index = -1
+            number_indents = None
+            if self.goods_nomenclature_item_id == "0102210000":
+                a = 1
                 
-                if (next_code.number_indents <= number_indents) or (next_code.goods_nomenclature_item_id[-8:]) == "00000000":
-                    break
+            for code in code_list:
+                index += 1
+                if (code.goods_nomenclature_item_id == self.goods_nomenclature_item_id) and (str(code.productline_suffix) == "80"):
+                    found = True
+                    if self.goods_nomenclature_item_id[-8:] == "00000000":
+                        number_indents = -1
+                    else:
+                        number_indents = code.number_indents
         
-        if is_leaf == True or found == False:
-            self.impacted_end_lines.append(self.goods_nomenclature_item_id)
+                    if int(code.leaf) == 1:
+                        is_leaf = True
+                    break
+            if is_leaf == False and found == True:
+                for loop in range(index + 1, len(code_list) - 1):
+                    next_code = code_list[loop]
+                    if next_code.leaf == 1:
+                        self.impacted_end_lines.append(next_code.goods_nomenclature_item_id)
+                    
+                    if (next_code.number_indents <= number_indents) or (next_code.goods_nomenclature_item_id[-8:]) == "00000000":
+                        break
+            
+            if is_leaf == True or found == False:
+                self.impacted_end_lines.append(self.goods_nomenclature_item_id)
+
+        except:
+            pass
 
 
 class CommodityChange(object):
@@ -80,36 +83,39 @@ class QuotaDefinitionChange(object):
     def get_end_lines(self):
         # For each of these we need to get end lines
         
-        my_list = g.definition_list["sid_" + str(self.sid)]
-        for item in my_list:
-            code_key = "codes_" + item[0]
-            code_list = g.code_lists[code_key]
-            found = False
-            is_leaf = False
-            index = -1
-            number_indents = None
+        try:
+            my_list = g.definition_list["sid_" + str(self.sid)]
+            for item in my_list:
+                code_key = "codes_" + item[0]
+                code_list = g.code_lists[code_key]
+                found = False
+                is_leaf = False
+                index = -1
+                number_indents = None
 
-            for code in code_list:
-                index += 1
-                if (code.goods_nomenclature_item_id == item) and (str(code.productline_suffix) == "80"):
-                    found = True
-                    if item[-8:] == "00000000":
-                        number_indents = -1
-                    else:
-                        number_indents = code.number_indents
-        
-                    if int(code.leaf) == 1:
-                        is_leaf = True
-                    break
-
-            if is_leaf == False and found == True:
-                for loop in range(index + 1, len(code_list) - 1):
-                    next_code = code_list[loop]
-                    if next_code.leaf == 1:
-                        self.impacted_end_lines.append(next_code.goods_nomenclature_item_id)
-                    
-                    if (next_code.number_indents <= number_indents) or (next_code.goods_nomenclature_item_id[-8:]) == "00000000":
-                        break
+                for code in code_list:
+                    index += 1
+                    if (code.goods_nomenclature_item_id == item) and (str(code.productline_suffix) == "80"):
+                        found = True
+                        if item[-8:] == "00000000":
+                            number_indents = -1
+                        else:
+                            number_indents = code.number_indents
             
-            if is_leaf == True or found == False:
-                self.impacted_end_lines.append(item)
+                        if int(code.leaf) == 1:
+                            is_leaf = True
+                        break
+
+                if is_leaf == False and found == True:
+                    for loop in range(index + 1, len(code_list) - 1):
+                        next_code = code_list[loop]
+                        if next_code.leaf == 1:
+                            self.impacted_end_lines.append(next_code.goods_nomenclature_item_id)
+                        
+                        if (next_code.number_indents <= number_indents) or (next_code.goods_nomenclature_item_id[-8:]) == "00000000":
+                            break
+                
+                if is_leaf == True or found == False:
+                    self.impacted_end_lines.append(item)
+        except:
+            pass
