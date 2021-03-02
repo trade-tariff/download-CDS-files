@@ -208,23 +208,29 @@ class XmlFile(object):
         row_count = 0
         commodities = self.root.find('.//findGoodsNomenclatureByDatesResponse')
         if commodities:
-            # Write Excel column headers
-            worksheet = g.excel.workbook.add_worksheet("Commodities")
-            data = (
-                'Action',
-                'Commodity code',
-                'Product line suffix',
-                'Description',
-                'Start date',
-                'End date',
-                'Statistical indicator',
-                'SID'
-            )
-            worksheet.write_row('A1', data, g.excel.format_bold)
-            worksheet.set_column(0, 0, 30)
-            worksheet.set_column(1, 7, 20)
-            worksheet.set_column(3, 3, 50)
-            worksheet.freeze_panes(1, 0)
+            commodities = commodities.findall("GoodsNomenclature")
+            if commodities:
+                # Write Excel column headers
+                worksheet = g.excel.workbook.add_worksheet("Commodities")
+                data = (
+                    'Action',
+                    'Commodity code',
+                    'Product line suffix',
+                    'Description',
+                    'Start date',
+                    'End date',
+                    'Statistical indicator',
+                    'SID'
+                )
+                worksheet.write_row('A1', data, g.excel.format_bold)
+                worksheet.set_column(0, 0, 30)
+                worksheet.set_column(1, 7, 20)
+                worksheet.set_column(3, 3, 50)
+                worksheet.freeze_panes(1, 0)
+                
+                for commodity in commodities:
+                    row_count += 1
+                    GoodsNomenclature(commodity, worksheet, row_count)
 
     def get_quota_order_numbers(self):
         row_count = 0
