@@ -8,12 +8,11 @@ from cds_objects.geographical_area_membership import GeographicalAreaMembership
 
 class GeographicalArea(Master):
 
-    def __init__(self, md_file, elem, worksheet, row_count):
+    def __init__(self, elem, worksheet, row_count):
         Master.__init__(self, elem)
         self.elem = elem
         self.worksheet = worksheet
         self.row_count = row_count
-        self.md_file = md_file
         self.descriptions = []
         self.description_string = ""
         self.memberships = []
@@ -47,7 +46,7 @@ class GeographicalArea(Master):
         geographical_area_descriptions = self.elem.findall('geographicalAreaDescriptionPeriod')
         if geographical_area_descriptions:
             for geographical_area_description in geographical_area_descriptions:
-                obj = GeographicalAreaDescription(self.md_file, geographical_area_description)
+                obj = GeographicalAreaDescription(geographical_area_description)
                 self.descriptions += obj.tbl
                 self.description_string += obj.description_string
                 
@@ -55,7 +54,7 @@ class GeographicalArea(Master):
         geographical_area_memberships = self.elem.findall('geographicalAreaMembership')
         if geographical_area_memberships:
             for geographical_area_membership in geographical_area_memberships:
-                obj = GeographicalAreaMembership(self.md_file, geographical_area_membership)
+                obj = GeographicalAreaMembership(geographical_area_membership)
                 self.memberships += obj.tbl
                 self.membership_string += obj.membership_string
                 self.current_membership_string += obj.current_membership_string

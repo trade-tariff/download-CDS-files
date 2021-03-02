@@ -6,10 +6,9 @@ import classes.globals as g
 
 class QuotaBalanceEvent(Master):
 
-    def __init__(self, md_file, elem):
+    def __init__(self, elem):
         Master.__init__(self, elem)
         self.elem = elem
-        self.md_file = md_file
         self.quota_balance_event_string = ""
         self.get_data()
 

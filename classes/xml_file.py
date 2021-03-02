@@ -1,11 +1,8 @@
 import os
 import sys
 import json
-import markdown
 import xml.etree.ElementTree as ET
 import classes.globals as g
-from mdutils.mdutils import MdUtils
-from mdutils import Html
 from classes.sendgrid_mailer import SendgridMailer
 
 import classes.functions as func
@@ -22,7 +19,6 @@ from classes.excel import Excel
 
 class XmlFile(object):
     def __init__(self, filename):
-        self.markdown = ""
         self.filename = filename
         self.path = os.path.join(os.getcwd(), "resources")
         self.path = os.path.join(self.path, "xml")
@@ -34,7 +30,6 @@ class XmlFile(object):
         g.excel.create_excel(self.path, self.filename)
         print("Creating file", self.filename.replace("xml", "xlsx"))
 
-        self.create_markdown_file()  # Create the markdown file
         tree = ET.parse(self.file_path)
         self.root = tree.getroot()
         self.get_results_info()
@@ -49,9 +44,6 @@ class XmlFile(object):
         self.get_quota_definitions()
         self.get_geographical_areas()
 
-        self.table_of_contents()
-        self.save_markdown_file()  # Save the markdown file
-        self.convert_to_html()  # Convert file to html
         g.excel.close_excel()
 
         self.write_changes()
@@ -114,9 +106,6 @@ class XmlFile(object):
         f.write(my_string)
         f.close()
 
-    def table_of_contents(self):
-        self.md_file.new_table_of_contents(table_title='Contents', depth=1)
-
     def get_footnote_types(self):
         row_count = 0
         footnote_types = self.root.find('.//findFootnoteTypeByDatesResponse')
@@ -131,14 +120,11 @@ class XmlFile(object):
             worksheet.set_column(5, 5, 50)
             worksheet.freeze_panes(1, 0)
 
-            # Write markdown header
-            self.md_file.new_header(level=1, title="Changes to footnote types")
-
             # Get data
             footnote_types = footnote_types.findall("FootnoteType")
             for footnote_type in footnote_types:
                 row_count += 1
-                FootnoteType(self.md_file, footnote_type, worksheet, row_count)
+                FootnoteType(footnote_type, worksheet, row_count)
 
     def get_footnotes(self):
         row_count = 0
@@ -153,14 +139,11 @@ class XmlFile(object):
             worksheet.set_column(6, 6, 50)
             worksheet.freeze_panes(1, 0)
 
-            # Write markdown header
-            self.md_file.new_header(level=1, title="Changes to footnotes")
-
             # Get data
             footnotes = footnotes.findall("Footnote")
             for footnote in footnotes:
                 row_count += 1
-                Footnote(self.md_file, footnote, worksheet, row_count)
+                Footnote(footnote, worksheet, row_count)
 
     def get_additional_codes(self):
         row_count = 0
@@ -177,15 +160,11 @@ class XmlFile(object):
             worksheet.set_column(5, 5, 50)
             worksheet.freeze_panes(1, 0)
 
-            # Write markdown header
-            self.md_file.new_header(
-                level=1, title="Changes to additional codes")
-
             # Get data
             additional_codes = additional_codes.findall("AdditionalCode")
             for additional_code in additional_codes:
                 row_count += 1
-                AdditionalCode(self.md_file, additional_code,
+                AdditionalCode(additional_code,
                                worksheet, row_count)
 
     def get_measures(self):
@@ -195,27 +174,35 @@ class XmlFile(object):
             # Write Excel column headers
             worksheet = g.excel.workbook.add_worksheet("Measures")
             data = (
-                'Action', 'SID', 'Commodity code', 'Additional code', 'Measure type',
-                'Geographical area', 'Quota order number', 'Start date',
-                'End date', 'Duty', 'Excluded areas', 'Footnotes', 'Conditions'
+                'Action',
+                'Commodity code',
+                'Additional code',
+                'Measure type',
+                'Geographical area',
+                'Quota order number',
+                'Start date',
+                'End date',
+                'Duty',
+                'Excluded areas',
+                'Footnotes',
+                'Conditions',
+                'SID'
             )
             worksheet.write_row('A1', data, g.excel.format_bold)
             worksheet.set_column(0, 0, 30)
-            worksheet.set_column(1, 8, 20)
-            worksheet.set_column(4, 5, 40)
-            worksheet.set_column(9, 9, 40)
-            worksheet.set_column(10, 11, 30)
-            worksheet.set_column(12, 12, 50)
+            worksheet.set_column(1, 7, 20)
+            worksheet.set_column(3, 4, 40)
+            worksheet.set_column(8, 8, 40)
+            worksheet.set_column(9, 10, 30)
+            worksheet.set_column(11, 11, 100)
+            worksheet.set_column(12, 12, 30)
             worksheet.freeze_panes(1, 0)
-
-            # Write markdown header
-            self.md_file.new_header(level=1, title="Changes to measures")
 
             # Get data
             measures = measures.findall("Measure")
             for measure in measures:
                 row_count += 1
-                Measure(self.md_file, measure, worksheet, row_count)
+                Measure(measure, worksheet, row_count)
 
     def get_commodities(self):
         row_count = 0
@@ -223,22 +210,21 @@ class XmlFile(object):
         if commodities:
             # Write Excel column headers
             worksheet = g.excel.workbook.add_worksheet("Commodities")
-            data = ('Action', 'SID', 'Commodity code', 'Product line suffix',
-                    'Statistical indicator', 'Start date', 'End date', 'Description')
+            data = (
+                'Action',
+                'Commodity code',
+                'Product line suffix',
+                'Description',
+                'Start date',
+                'End date',
+                'Statistical indicator',
+                'SID'
+            )
             worksheet.write_row('A1', data, g.excel.format_bold)
             worksheet.set_column(0, 0, 30)
-            worksheet.set_column(1, 6, 20)
-            worksheet.set_column(7, 7, 50)
+            worksheet.set_column(1, 7, 20)
+            worksheet.set_column(3, 3, 50)
             worksheet.freeze_panes(1, 0)
-
-            # Write markdown header
-            self.md_file.new_header(
-                level=1, title="Changes to commodity codes")
-            commodities = commodities.findall("GoodsNomenclature")
-            for commodity in commodities:
-                row_count += 1
-                GoodsNomenclature(self.md_file, commodity,
-                                  worksheet, row_count)
 
     def get_quota_order_numbers(self):
         row_count = 0
@@ -253,15 +239,11 @@ class XmlFile(object):
             worksheet.set_column(1, 4, 20)
             worksheet.freeze_panes(1, 0)
 
-            # Write markdown header
-            self.md_file.new_header(
-                level=1, title="Changes to quota order numbers")
-
             # Get data
             quotas = quotas.findall("QuotaOrderNumber")
             for quota in quotas:
                 row_count += 1
-                QuotaOrderNumber(self.md_file, quota, worksheet, row_count)
+                QuotaOrderNumber(quota, worksheet, row_count)
 
     def get_geographical_areas(self):
         row_count = 0
@@ -286,7 +268,7 @@ class XmlFile(object):
             for geographical_area in geographical_areas:
                 row_count += 1
                 geographical_area_object = GeographicalArea(
-                    self.md_file, geographical_area, worksheet, row_count)
+                    geographical_area, worksheet, row_count)
                 geographical_area_objects.append(geographical_area_object)
 
             geographical_area_objects = sorted(
@@ -317,17 +299,13 @@ class XmlFile(object):
                 worksheet.set_column(i, i, widths[i])
             worksheet.freeze_panes(1, 0)
 
-            # Write markdown header
-            self.md_file.new_header(
-                level=1, title="Changes to quota definitions")
-
             # Get data
             quota_definitions = quota_definitions.findall("QuotaDefinition")
             quota_definition_objects = []
             for quota_definition in quota_definitions:
                 row_count += 1
                 quota_definition_object = QuotaDefinition(
-                    self.md_file, quota_definition, worksheet, row_count)
+                    quota_definition, worksheet, row_count)
                 quota_definition_objects.append(quota_definition_object)
 
             quota_definition_objects = sorted(
@@ -339,16 +317,6 @@ class XmlFile(object):
                 quota_definition_object.write_data()
                 row_count += 1
 
-    def create_markdown_file(self):
-        self.md_path = self.path.replace("xml", "md")
-        self.md_filename = self.filename.replace("xml", "md")
-        self.md_filename = os.path.join(self.md_path, self.md_filename)
-        self.md_file = MdUtils(file_name=self.md_filename,
-                               title='CDS data extract')
-
-    def save_markdown_file(self):
-        self.md_file.create_md_file()
-
     def get_results_info(self):
         results_info = self.root.find('ResultsInfo')
         self.total_records = results_info.find("totalRecords").text
@@ -358,28 +326,3 @@ class XmlFile(object):
         self.export_date = func.parse_date(self.filename[7:15])
         self.range_start = func.parse_date(self.filename[23:31])
         self.range_end = func.parse_date(self.filename[39:47])
-
-        self.md_file.new_header(level=1, title="Core info")
-        tbl = ["Field", "Value", "Record count", self.total_records, "Export date",
-               self.export_date, "Range start", self.range_start, "Range end", self.range_end]
-        self.md_file.new_table(columns=2, rows=5, text=tbl, text_align='left')
-
-    def convert_to_html(self):
-        return
-        self.html_path = self.path.replace("xml", "html")
-        self.html_filename = self.filename.replace("xml", "html")
-        self.html_filename = os.path.join(self.html_path, self.html_filename)
-
-        self.docx_path = self.path.replace("xml", "docx")
-        self.docx_filename = self.filename.replace("xml", "docx")
-        self.docx_filename = os.path.join(self.docx_path, self.docx_filename)
-
-        self.md_file = MdUtils(file_name=self.html_filename,
-                               title='CDS data extract')
-
-        # Convert to HTML
-        css_file = os.path.join(os.getcwd(), "css")
-        css_file = os.path.join(css_file, "custom.css")
-
-        # os.system("pandoc --quiet '" + self.md_filename + "' -f markdown -t html -s -o  '" + self.html_filename + "'")
-        # os.system("pandoc --quiet '" + self.md_filename + "' -f markdown -t docx -s -o  '" + self.docx_filename + "'")

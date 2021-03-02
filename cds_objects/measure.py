@@ -11,12 +11,11 @@ from cds_objects.footnote_association_measure import FootnoteAssociationMeasure
 
 class Measure(Master):
 
-    def __init__(self, md_file, elem, worksheet, row_count):
+    def __init__(self, elem, worksheet, row_count):
         Master.__init__(self, elem)
         self.elem = elem
         self.worksheet = worksheet
         self.row_count = row_count
-        self.md_file = md_file
         self.combined_duty = ""
         self.footnote_string = ""
         self.descriptions = []
@@ -63,50 +62,25 @@ class Measure(Master):
     def get_measure_type_description(self):
         self.measure_type_description = g.measure_type_dict[self.measure_type_id]
 
-    def write_data(self):
-        # Write the markdown
-        self.md_file.new_header(level=2, title=self.operation_text + " measure")
-        tbl = ["Field", "Value",
-               "Measure SID", str(self.measure_sid),
-               "Commodity code", self.goods_nomenclature_item_id,
-               "Additional code", self.additional_code,
-               "Measure type ID", self.measure_type_id +
-               " (" + self.measure_type_description + ")",
-               "Geographical area", self.geographical_area_id +
-               " (" + self.geographical_area_description + ")",
-               "Quota order number", self.ordernumber,
-               "Validity start date", Master.format_date(
-                   self.validity_start_date),
-               "Validity end date", Master.format_date(self.validity_end_date)
-               ]
-               
+    def write_data(self):              
         # Write the Excel
         self.worksheet.write(self.row_count, 0, self.operation_text + " measure", g.excel.format_wrap)
-        self.worksheet.write(self.row_count, 1, self.measure_sid, g.excel.format_wrap)
-        self.worksheet.write(self.row_count, 2, self.goods_nomenclature_item_id, g.excel.format_wrap)
-        self.worksheet.write(self.row_count, 3, self.additional_code, g.excel.format_wrap)
-        self.worksheet.write(self.row_count, 4, self.measure_type_id +
+        self.worksheet.write(self.row_count, 1, self.goods_nomenclature_item_id, g.excel.format_wrap)
+        self.worksheet.write(self.row_count, 2, self.additional_code, g.excel.format_wrap)
+        self.worksheet.write(self.row_count, 3, self.measure_type_id +
                " (" + self.measure_type_description + ")", g.excel.format_wrap)
-        self.worksheet.write(self.row_count, 5, self.geographical_area_id +
+        self.worksheet.write(self.row_count, 4, self.geographical_area_id +
                " (" + self.geographical_area_description + ")", g.excel.format_wrap)
-        self.worksheet.write(self.row_count, 6, self.ordernumber, g.excel.format_wrap)
-        self.worksheet.write(self.row_count, 7, Master.format_date(
+        self.worksheet.write(self.row_count, 5, self.ordernumber, g.excel.format_wrap)
+        self.worksheet.write(self.row_count, 6, Master.format_date(
                    self.validity_start_date), g.excel.format_wrap)
-        self.worksheet.write(self.row_count, 8, Master.format_date(
+        self.worksheet.write(self.row_count, 7, Master.format_date(
                    self.validity_end_date), g.excel.format_wrap)
-        self.worksheet.write(self.row_count, 9, self.combined_duty, g.excel.format_wrap)
-        self.worksheet.write(self.row_count, 10, self.exclusion_string, g.excel.format_wrap)
-        self.worksheet.write(self.row_count, 11, self.footnote_string, g.excel.format_wrap)
-        self.worksheet.write(self.row_count, 12, self.measure_condition_string_excel, g.excel.format_wrap)
-
-        # Add in the ancillary objects
-        tbl += self.duty_expression_array # Measure components
-        tbl += self.measure_condition_array
-        tbl += self.exclusion_string_array
-        tbl += self.footnote_array
-
-        # Create the table
-        self.md_file.new_table(columns=2, rows=int(len(tbl)/2), text=tbl, text_align='left')
+        self.worksheet.write(self.row_count, 8, self.combined_duty, g.excel.format_wrap)
+        self.worksheet.write(self.row_count, 9, self.exclusion_string, g.excel.format_wrap)
+        self.worksheet.write(self.row_count, 10, self.footnote_string, g.excel.format_wrap)
+        self.worksheet.write(self.row_count, 11, self.measure_condition_string_excel, g.excel.format_wrap)
+        self.worksheet.write(self.row_count, 12, self.measure_sid, g.excel.format_wrap)
 
     def get_measure_components(self):
         measure_components = self.elem.findall('measureComponent')
@@ -115,7 +89,7 @@ class Measure(Master):
 
         if measure_components:
             for measure_component in measure_components:
-                duty_string = MeasureComponent(self.md_file, measure_component).duty_string
+                duty_string = MeasureComponent(measure_component).duty_string
                 if duty_string is not None:
                     self.measure_components.append(duty_string)
         
@@ -133,7 +107,7 @@ class Measure(Master):
 
         if measure_conditions:
             for measure_condition in measure_conditions:
-                measure_condition_string = MeasureCondition(self.md_file, measure_condition).output
+                measure_condition_string = MeasureCondition(measure_condition).output
                 if measure_condition_string != "":
                     self.measure_condition_string += measure_condition_string
         self.measure_condition_string_excel = self.measure_condition_string.replace("<br />", "\n")
@@ -150,7 +124,7 @@ class Measure(Master):
 
         if measure_excluded_geographical_areas:
             for measure_excluded_geographical_area in measure_excluded_geographical_areas:
-                geographical_area_id = MeasureExcludedGeographicalArea(self.md_file, measure_excluded_geographical_area).geographical_area_id
+                geographical_area_id = MeasureExcludedGeographicalArea(measure_excluded_geographical_area).geographical_area_id
                 if geographical_area_id is not None:
                     self.exclusion_string += geographical_area_id + ", "
         
@@ -169,7 +143,7 @@ class Measure(Master):
 
         if footnotes:
             for footnote in footnotes:
-                footnote_id = FootnoteAssociationMeasure(self.md_file, footnote).footnote
+                footnote_id = FootnoteAssociationMeasure(footnote).footnote
                 if footnote_id != "":
                     self.footnote_string += footnote_id + ", "
         

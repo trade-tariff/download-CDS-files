@@ -5,10 +5,9 @@ import classes.globals as g
 
 class MeasureCondition(Master):
 
-    def __init__(self, md_file, elem):
+    def __init__(self, elem):
         Master.__init__(self, elem)
         self.elem = elem
-        self.md_file = md_file
         self.get_data()
 
     def get_data(self):

@@ -5,10 +5,9 @@ import classes.globals as g
 
 class GeographicalAreaMembership(Master):
 
-    def __init__(self, md_file, elem):
+    def __init__(self, elem):
         Master.__init__(self, elem)
         self.elem = elem
-        self.md_file = md_file
         self.membership_string = ""
         self.current_membership_string = ""
         self.get_data()

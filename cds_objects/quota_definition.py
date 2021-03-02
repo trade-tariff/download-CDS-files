@@ -8,12 +8,11 @@ from cds_objects.change import QuotaDefinitionChange
 
 class QuotaDefinition(Master):
 
-    def __init__(self, md_file, elem, worksheet, row_count):
+    def __init__(self, elem, worksheet, row_count):
         Master.__init__(self, elem)
         self.elem = elem
         self.worksheet = worksheet
         self.row_count = row_count
-        self.md_file = md_file
         self.quota_balance_events = []
         self.quota_balance_event_string = ""
         self.comm_code_string = ""
@@ -48,17 +47,6 @@ class QuotaDefinition(Master):
         self.comm_code_string = self.comm_code_string.strip(",")
         
     def write_data(self):
-        # Write the markdown
-        # self.md_file.new_header(level=2, title=self.operation_text + " quota definition")
-        # tbl = ["Field", "Value",
-        #        "Footnote type ID", self.footnote_type_id,
-        #        "Footnote ID", self.footnote_id,
-        #        "Validity start date", Master.format_date(self.validity_start_date),
-        #        "Validity end date", Master.format_date(self.validity_end_date)
-        #        ]
-        # tbl += self.descriptions
-        # self.md_file.new_table(columns=2, rows=int(len(tbl)/2), text=tbl, text_align='left')
-
         # Write the Excel
         self.worksheet.write(self.row_count, 0, self.operation_text + " definition", g.excel.format_wrap)
         self.worksheet.write(self.row_count, 1, self.quota_order_number_id, g.excel.format_wrap)
@@ -77,8 +65,14 @@ class QuotaDefinition(Master):
         self.quota_balance_event_string = ""
         quota_balance_events = self.elem.findall('quotaBalanceEvent')
         if quota_balance_events:
-            for quota_balance_event in quota_balance_events:
-                obj = QuotaBalanceEvent(self.md_file, quota_balance_event)
+            if g.USE_LATEST_UPDATE_ONLY:
+                quota_balance_event_count = len(quota_balance_events)
+                quota_balance_event = quota_balance_events[quota_balance_event_count - 1]
+                obj = QuotaBalanceEvent(quota_balance_event)
                 self.quota_balance_event_string += obj.quota_balance_event_string + "\n"
+            else:
+                for quota_balance_event in quota_balance_events:
+                    obj = QuotaBalanceEvent(quota_balance_event)
+                    self.quota_balance_event_string += obj.quota_balance_event_string + "\n"
         
         self.quota_balance_event_string = self.quota_balance_event_string.strip("\n")

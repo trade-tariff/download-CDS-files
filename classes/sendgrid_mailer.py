@@ -14,6 +14,10 @@ from classes.database import Database
 class SendgridMailer(object):
     def __init__(self, subject, html_content, filename):
         load_dotenv('.env')
+        self.send_mail = int(os.getenv('SEND_MAIL'))
+        if self.send_mail == 0:
+            return
+        
         self.filename = filename
         self.subject = subject
         self.html_content = html_content
@@ -22,6 +26,9 @@ class SendgridMailer(object):
         self.parse_to_emails()
         
     def send(self):
+        if self.send_mail == 0:
+            return
+
         if len(self.to_emails) > 1:
             is_multiple = True
         else:

@@ -1,5 +1,8 @@
+import os
+from dotenv import load_dotenv
 from classes.geography_list import GeographyList
 from classes.reference_data import ActionCodeList, MeasureTypeList, ConditionCodeList
+
 
 # Get a list of all geo areas
 obj = GeographyList()
@@ -21,3 +24,7 @@ condition_code_dict = obj.condition_code_dict
 change_list = []
 code_lists = []
 definition_list = {}
+
+# Get global env settings
+load_dotenv('.env')
+USE_LATEST_UPDATE_ONLY = os.getenv('USE_LATEST_UPDATE_ONLY')
