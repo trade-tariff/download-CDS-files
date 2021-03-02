@@ -200,9 +200,23 @@ class XmlFile(object):
 
             # Get data
             measures = measures.findall("Measure")
+            measure_objects = []
             for measure in measures:
                 row_count += 1
-                Measure(measure, worksheet, row_count)
+                measure_objects.append(Measure(measure, worksheet, row_count))
+            
+            measure_objects = sorted(measure_objects, key=lambda x: x.measure_type_id, reverse=False)
+            measure_objects = sorted(measure_objects, key=lambda x: x.goods_nomenclature_item_id, reverse=False)
+            measure_objects = sorted(measure_objects, key=lambda x: x.operation_text, reverse=False)
+            
+            row_count = 0
+            for measure in measure_objects:
+                row_count += 1
+                measure.row_count = row_count
+                measure.write_data()
+                
+            range = 'A1:M' + str(row_count)
+            worksheet.autofilter(range)
 
     def get_commodities(self):
         row_count = 0
@@ -228,9 +242,24 @@ class XmlFile(object):
                 worksheet.set_column(3, 3, 50)
                 worksheet.freeze_panes(1, 0)
                 
+                commodity_objects = []
                 for commodity in commodities:
                     row_count += 1
-                    GoodsNomenclature(commodity, worksheet, row_count)
+                    commodity_objects.append(GoodsNomenclature(commodity, worksheet, row_count))
+
+                commodity_objects = sorted(commodity_objects, key=lambda x: x.product_line_suffix, reverse=False)
+                commodity_objects = sorted(commodity_objects, key=lambda x: x.goods_nomenclature_item_id, reverse=False)
+                commodity_objects = sorted(commodity_objects, key=lambda x: x.operation_text, reverse=False)
+                
+                row_count = 0
+                for commodity in commodity_objects:
+                    if commodity.description_string != "":
+                        row_count += 1
+                        commodity.row_count = row_count
+                        commodity.write_data()
+                        
+                range = 'A1:H' + str(row_count)
+                worksheet.autofilter(range)
 
     def get_quota_order_numbers(self):
         row_count = 0

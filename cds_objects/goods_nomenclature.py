@@ -15,7 +15,7 @@ class GoodsNomenclature(Master):
         self.descriptions = []
         self.description_string = ""
         self.get_data()
-        self.write_data()
+        # self.write_data()
 
     def get_data(self):
         self.goods_nomenclature_sid = Master.process_null(self.elem.find("sid"))

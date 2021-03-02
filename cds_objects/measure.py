@@ -22,7 +22,7 @@ class Measure(Master):
         self.duty_expression_array = []
         self.measure_condition_array = []
         self.get_data()
-        self.write_data()
+        # self.write_data()
 
     def get_data(self):
         self.measure_sid = Master.process_null_int(self.elem.find("sid"))
