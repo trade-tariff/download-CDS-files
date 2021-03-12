@@ -4,6 +4,7 @@ import csv
 from dotenv import load_dotenv
 
 import classes.globals as g
+import classes.functions as f
 from classes.database import Database
 from classes.classification import Classification
 from .xml_file import XmlFile
@@ -27,7 +28,8 @@ class Parser(object):
                 if self.OVERWRITE_XLSX == 1:
                     proceed = True
                 else:
-                    proceed = not self.check_exists(filename)
+                    excel_filename = f.xml_to_xlsx_filename(filename)
+                    proceed = not self.check_exists(excel_filename)
                 if proceed:
                     xml_file = XmlFile(filename)
                     xml_file.parse_xml()
