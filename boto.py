@@ -2,14 +2,6 @@ import boto3
 import os
 from dotenv import load_dotenv
 
-"""
-
-export AWS_ACCESS_KEY_ID="AKIAV3ON3AJYAYDATCAX"
-export AWS_REGION="eu-west-2"
-export AWS_SECRET_ACCESS_KEY="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"
-export BUCKET_NAME="paas-s3-broker-prod-lon-3f1af4a0-af3d-40fc-9abe-0663810d8717"
-"""
-
 load_dotenv('.env')
 
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
