@@ -47,7 +47,7 @@ class Parser(object):
         print("Writing quota balances")
         d = Database()
         rows = d.run_query(sql)
-        fields = ['Order number', 'Definition ID', 'Definition start', 'Latest balance'] 
+        fields = ['Order number', 'Definition ID', 'Definition start', 'Latest balance', 'Description'] 
         with open(balance_path, mode='w') as csv_file:
             write = csv.writer(csv_file)
             write.writerow(fields)
