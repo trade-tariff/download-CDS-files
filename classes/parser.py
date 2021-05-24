@@ -1,6 +1,7 @@
 import os
 import sys
 import csv
+from datetime import datetime
 from dotenv import load_dotenv
 
 import classes.globals as g
@@ -17,6 +18,7 @@ class Parser(object):
         self.path = os.path.join(os.getcwd(), "resources")
         self.xml_path = os.path.join(self.path, "xml")
         self.xlsx_path = os.path.join(self.path, "xlsx")
+        self.balance_path = os.path.join(self.path, "balances")
 
     def parse_files(self):
         self.get_quota_definitions()
@@ -36,6 +38,21 @@ class Parser(object):
             else:
                 continue
 
+    def parse_quota_balances(self):
+        the_date = datetime.now()
+        date_string = datetime.strftime(the_date, '%Y-%m-%d')
+        balance_path = os.path.join(self.balance_path, "balances_" + date_string + ".csv")
+
+        sql = "select * from utils.quota_balances qb"
+        print("Writing quota balances")
+        d = Database()
+        rows = d.run_query(sql)
+        fields = ['Order number', 'Definition ID', 'Definition start', 'Latest balance'] 
+        with open(balance_path, mode='w') as csv_file:
+            write = csv.writer(csv_file)
+            write.writerow(fields)
+            write.writerows(rows)
+    
     def check_exists(self, filename):
         filename = filename.replace("xml", "xlsx")
         xlsx_filename = os.path.join(self.xlsx_path, filename)
