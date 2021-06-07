@@ -12,4 +12,5 @@ foldername = p.xlsx_path
 #      }
 
 # systems.get(os.name, os.startfile)(foldername)
+print("Finding requested folder / files ...")
 os.system('open "%s"' % foldername)
