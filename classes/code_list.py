@@ -1,5 +1,7 @@
 import os
 import sys
+import glob
+import pandas as pd
 from datetime import datetime
 from classes.database import Database
 from classes.classification import Classification
@@ -8,7 +10,8 @@ from classes.classification import Classification
 class CodeList(object):
     def create_commodity_extract(self):
         print("Creating commodity code extract")
-        d2 = "2021-02-01"
+        d = datetime.now()
+        d2 = datetime.strftime(d, '%Y-%m-%d')
         for i in range(0, 10):
             self.classifications = []
             chapter = str(i) + "%"
@@ -33,10 +36,10 @@ class CodeList(object):
                 )
                 self.classifications.append(classification)
 
-            filename = os.getcwd()
-            filename = os.path.join(filename, "resources")
-            filename = os.path.join(filename, "csv")
-            filename = os.path.join(filename, "commodities_" + str(i) + ".csv")
+            self.folder = os.getcwd()
+            self.folder = os.path.join(self.folder, "resources")
+            self.folder = os.path.join(self.folder, "csv")
+            filename = os.path.join(self.folder, "commodities_" + str(i) + ".csv")
 
             f = open(filename, "w+")
             field_names = '"SID","Commodity code","Product line suffix","Indentation","End line"\n'
@@ -44,3 +47,8 @@ class CodeList(object):
             for item in self.classifications:
                 f.write(item.extract_row())
             f.close()
+            
+        self.concatenate()
+
+    def concatenate(self):
+        return
