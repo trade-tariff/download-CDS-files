@@ -66,17 +66,20 @@ class Downloader(object):
                     print(f'{filename} already exists, skipping...')
                 else:
                     print(f'Downloading {filename}...')
-                    wget.download(download_url, out=zip_path, bar=None)
-                    zfile = zipfile.ZipFile(zip_filename)
-                    zfile.extractall(xml_path)
-                    unzipped_files = zfile.filelist
-                    if unzipped_files:
-                        xml_filename = unzipped_files[0].filename
+                    try:
+                        wget.download(download_url, out=zip_path, bar=None)
+                        zfile = zipfile.ZipFile(zip_filename)
+                        zfile.extractall(xml_path)
+                        unzipped_files = zfile.filelist
+                        if unzipped_files:
+                            xml_filename = unzipped_files[0].filename
 
-                        # Copy to the import folder for running the import
-                        src = os.path.join(xml_path, xml_filename)
-                        dest = os.path.join(self.IMPORT_FOLDER, "CDS")
-                        dest = os.path.join(dest, xml_filename)
-                        copyfile(src, dest)
-                    else:
-                        print("There was a problem in unzipping that archive.")
+                            # Copy to the import folder for running the import
+                            src = os.path.join(xml_path, xml_filename)
+                            dest = os.path.join(self.IMPORT_FOLDER, "CDS")
+                            dest = os.path.join(dest, xml_filename)
+                            copyfile(src, dest)
+                        else:
+                            print("There was a problem in unzipping that archive.")
+                    except:
+                        print("Failed attempt to download file from", download_url, file_entry.filename)

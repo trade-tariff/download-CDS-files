@@ -1,7 +1,5 @@
 import os
 import sys
-import glob
-import pandas as pd
 from datetime import datetime
 from classes.database import Database
 from classes.classification import Classification
