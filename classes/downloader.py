@@ -50,7 +50,9 @@ class Downloader(object):
             cds_file.filename = file_entry['filename']
             cds_file.download_url = file_entry['downloadURL']
             self.cds_files.append(cds_file)
+            print(file_entry['filename'])
 
+        # sys.exit()
         self.cds_files = sorted(self.cds_files, key=lambda x: x.filename, reverse=True)
 
         for file_entry in self.cds_files:
