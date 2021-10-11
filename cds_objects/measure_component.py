@@ -25,9 +25,9 @@ class MeasureComponent(Master):
 
         if self.duty_expression_id == "01":
             if self.monetary_unit_code == "":
-                self.duty_string += "{0:1.2f}".format(self.duty_amount) + "%"
+                self.duty_string += "{0:1.3f}".format(self.duty_amount) + "%"
             else:
-                self.duty_string += "{0:1.2f}".format(
+                self.duty_string += "{0:1.3f}".format(
                     self.duty_amount) + " " + self.monetary_unit_code
                 if self.measurement_unit_code != "":
                     self.duty_string += " / " + \
@@ -37,9 +37,9 @@ class MeasureComponent(Master):
 
         elif self.duty_expression_id in ("04", "19", "20"):
             if self.monetary_unit_code == "":
-                self.duty_string += "+ {0:1.2f}".format(self.duty_amount) + "%"
+                self.duty_string += "+ {0:1.3f}".format(self.duty_amount) + "%"
             else:
-                self.duty_string += "+ {0:1.2f}".format(
+                self.duty_string += "+ {0:1.3f}".format(
                     self.duty_amount) + " " + self.monetary_unit_code
                 if self.measurement_unit_code != "":
                     self.duty_string += " / " + \
@@ -49,10 +49,10 @@ class MeasureComponent(Master):
 
         elif self.duty_expression_id == "15":
             if self.monetary_unit_code == "":
-                self.duty_string += "MIN {0:1.2f}".format(
+                self.duty_string += "MIN {0:1.3f}".format(
                     self.duty_amount) + "%"
             else:
-                self.duty_string += "MIN {0:1.2f}".format(
+                self.duty_string += "MIN {0:1.3f}".format(
                     self.duty_amount) + " " + self.monetary_unit_code
                 if self.measurement_unit_code != "":
                     self.duty_string += " / " + \
@@ -62,10 +62,10 @@ class MeasureComponent(Master):
 
         elif self.duty_expression_id in ("17", "35"):  # MAX
             if self.monetary_unit_code == "":
-                self.duty_string += "MAX {0:1.2f}".format(
+                self.duty_string += "MAX {0:1.3f}".format(
                     self.duty_amount) + "%"
             else:
-                self.duty_string += "MAX {0:1.2f}".format(
+                self.duty_string += "MAX {0:1.3f}".format(
                     self.duty_amount) + " " + self.monetary_unit_code
                 if self.measurement_unit_code != "":
                     self.duty_string += " / " + \

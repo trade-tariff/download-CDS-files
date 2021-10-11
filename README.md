@@ -25,3 +25,10 @@
 
 ### To parse CDS extract files into Excel:
 `python3 parse.py`
+
+### To go to the Excel folder:
+`python3 dest.py`
+
+### To run all three of the steps above:
+`python3 parse.py`
+
