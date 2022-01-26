@@ -9,6 +9,7 @@ import classes.functions as func
 from cds_objects.footnote_type import FootnoteType
 from cds_objects.footnote import Footnote
 from cds_objects.additional_code import AdditionalCode
+from cds_objects.certificate import Certificate
 from cds_objects.measure import Measure
 from cds_objects.goods_nomenclature import GoodsNomenclature
 from cds_objects.quota_order_number import QuotaOrderNumber
@@ -38,6 +39,7 @@ class XmlFile(object):
         self.get_footnote_types()
         self.get_footnotes()
         self.get_additional_codes()
+        self.get_certificates()
         self.get_measures()
         self.get_commodities()
         self.get_quota_order_numbers()
@@ -166,6 +168,28 @@ class XmlFile(object):
                 row_count += 1
                 AdditionalCode(additional_code,
                                worksheet, row_count)
+
+
+    def get_certificates(self):
+        row_count = 0
+        certificates = self.root.find(
+            './/findCertificateByDatesResponse')
+        if certificates:
+            # Write Excel column headers
+            worksheet = g.excel.workbook.add_worksheet("Certificates")
+            data = ('Action', 'Certificate code type', 'Certificate code',
+                    'Start date', 'End date', 'Description')
+            worksheet.write_row('A1', data, g.excel.format_bold)
+            worksheet.set_column(0, 0, 30)
+            worksheet.set_column(1, 4, 20)
+            worksheet.set_column(5, 5, 50)
+            worksheet.freeze_panes(1, 0)
+
+            # Get data
+            certificates = certificates.findall("Certificate")
+            for certificate in certificates:
+                row_count += 1
+                Certificate(certificate, worksheet, row_count)
 
     def get_measures(self):
         row_count = 0
