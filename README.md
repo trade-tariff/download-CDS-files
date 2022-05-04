@@ -32,3 +32,6 @@
 ### To run all three of the steps above:
 `python3 parse.py`
 
+### Greppage
+`python3 grep.py 058032`
+
