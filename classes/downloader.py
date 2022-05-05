@@ -63,7 +63,7 @@ class Downloader(object):
             if "gzip" in filename:
                 download_url = file_entry.download_url
                 zip_filename = os.path.join(zip_path, filename)
-                
+
                 if os.path.isfile(zip_filename):
                     print(f'{filename} already exists, skipping...')
                 else:
@@ -83,7 +83,7 @@ class Downloader(object):
                             copyfile(src, dest)
                         else:
                             print("There was a problem in unzipping that archive.")
-                    except:
+                    except Exception as ex:
                         print("Failed attempt to download file from", download_url, file_entry.filename)
 
     def download_files_monthly(self):
@@ -115,7 +115,7 @@ class Downloader(object):
             if "gzip" in filename:
                 download_url = file_entry.download_url
                 zip_filename = os.path.join(zip_path, filename)
-                
+
                 if os.path.isfile(zip_filename):
                     print(f'{filename} already exists, skipping...')
                 else:
@@ -135,7 +135,7 @@ class Downloader(object):
                             copyfile(src, dest)
                         else:
                             print("There was a problem in unzipping that archive.")
-                    except:
+                    except Exception as ex:
                         print("Failed attempt to download file from", download_url, file_entry.filename)
 
     def download_files_annual(self):
@@ -167,7 +167,7 @@ class Downloader(object):
             if "gzip" in filename:
                 download_url = file_entry.download_url
                 zip_filename = os.path.join(zip_path, filename)
-                
+
                 if os.path.isfile(zip_filename):
                     print(f'{filename} already exists, skipping...')
                 else:
@@ -187,7 +187,5 @@ class Downloader(object):
                             copyfile(src, dest)
                         else:
                             print("There was a problem in unzipping that archive.")
-                    except:
+                    except Exception as ex:
                         print("Failed attempt to download file from", download_url, file_entry.filename)
-                        
-                        

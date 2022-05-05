@@ -8,7 +8,19 @@ from codecs import decode
 # Get the argument
 if len(sys.argv) > 1:
     xml_path = os.path.join(os.getcwd(), "resources", "xml")
-    term = ">" + decode(sys.argv[1], 'unicode_escape') + "<"
+    if len(sys.argv) > 2:
+        try:
+            add_chevrons = int(sys.argv[2])
+        except:
+            add_chevrons = 1
+    else:
+        add_chevrons = 1
+
+    term = decode(sys.argv[1], 'unicode_escape')
+
+    if add_chevrons == 1:
+        term = ">" + term + "<"
+
     grepped_filename = term.translate(str.maketrans('', '', string.punctuation)) + ".txt"
     grep_path = os.path.join(os.getcwd(), "resources", "grep")
     grep_path2 = os.path.join(grep_path, grepped_filename)

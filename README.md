@@ -22,6 +22,8 @@
 
 ### To download CDS extract files:
 `python3 download.py`
+`python3 download_monthly.py`
+`python3 download_annual.py`
 
 ### To parse CDS extract files into Excel:
 `python3 parse.py`
@@ -34,4 +36,3 @@
 
 ### Greppage
 `python3 grep.py 058032`
-
