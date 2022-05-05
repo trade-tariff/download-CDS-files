@@ -11,7 +11,7 @@ if len(sys.argv) > 1:
     if len(sys.argv) > 2:
         try:
             add_chevrons = int(sys.argv[2])
-        except:
+        except Exception as ex:
             add_chevrons = 1
     else:
         add_chevrons = 1
