@@ -20,6 +20,8 @@ if len(sys.argv) > 1:
 
     if add_chevrons == 1:
         term = ">" + term + "<"
+    elif add_chevrons == 2:
+        term = "<" + term + ">"
 
     grepped_filename = term.translate(str.maketrans('', '', string.punctuation)) + ".txt"
     grep_path = os.path.join(os.getcwd(), "resources", "grep")
