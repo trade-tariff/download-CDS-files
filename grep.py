@@ -29,14 +29,13 @@ if len(sys.argv) > 1:
 
     print("\nSearching for term '{term}' in folder '{grep_path2}'.\n".format(term=term, grep_path2=grep_path2))
 
-    grep_string = "grep -r --include='*.xml' '{term}' '{xml_path}' > '{grep_path2}'".format(
+    grep_string = "grep -i -r --include='*.xml' '{term}' '{xml_path}' > '{grep_path2}'".format(
         term=term,
         xml_path=xml_path,
         grep_path2=grep_path2
     )
-    # print("\n" + grep_string + "\n")
+    print("\n" + grep_string + "\n")
     ret = os.system(grep_string)
-    # print(ret)
 
     # Sort the file by date
     file = open(grep_path2)

@@ -15,6 +15,7 @@ from cds_objects.goods_nomenclature import GoodsNomenclature
 from cds_objects.quota_order_number import QuotaOrderNumber
 from cds_objects.quota_definition import QuotaDefinition
 from cds_objects.geographical_area import GeographicalArea
+from cds_objects.base_regulation import BaseRegulation
 from classes.excel import Excel
 
 
@@ -45,13 +46,14 @@ class XmlFile(object):
         self.get_quota_order_numbers()
         self.get_quota_definitions()
         self.get_geographical_areas()
+        self.get_base_regulations()
 
         g.excel.close_excel()
 
         self.write_changes()
-        
+
         self.mail_extract()
-        
+
     def mail_extract(self):
         edition = self.execution_date.split("T")[0]
         html_content = """
@@ -59,12 +61,11 @@ class XmlFile(object):
         <p>Please find attached the latest CDS updates in Excel format for {edition}.</p>
         <p>This data was loaded to the Online Tariff by 05:00 on {edition}.</p>
         <p>Thanks,</p>
-        <p>The Online Tariff Team.</p>""".format(edition = edition)
-        
+        <p>The Online Tariff Team.</p>""".format(edition=edition)
+
         subject = "CDS data load " + edition
         s = SendgridMailer(subject, html_content, g.excel.excel_filename)
         s.send()
-
 
     def write_changes(self):
         self.json_path = self.path.replace("xml", "json")
@@ -93,7 +94,7 @@ class XmlFile(object):
             elif change.object_type == "Quota definition":
                 quota_definitions.append(change.__dict__)
                 consolidated_commodities += change.impacted_end_lines
-                
+
         consolidated_commodities = list(set(consolidated_commodities))
         consolidated_commodities.sort()
 
@@ -102,7 +103,7 @@ class XmlFile(object):
         my_dict["commodity_changes"] = commodities
         my_dict["measure_changes"] = measures
         my_dict["quota_definition_changes"] = quota_definitions
-        
+
         f = open(self.json_filename, "w+")
         my_string = json.dumps(my_dict, indent=2, sort_keys=False)
         f.write(my_string)
@@ -169,7 +170,6 @@ class XmlFile(object):
                 AdditionalCode(additional_code,
                                worksheet, row_count)
 
-
     def get_certificates(self):
         row_count = 0
         certificates = self.root.find(
@@ -190,6 +190,26 @@ class XmlFile(object):
             for certificate in certificates:
                 row_count += 1
                 Certificate(certificate, worksheet, row_count)
+
+    def get_base_regulations(self):
+        row_count = 0
+        base_regulations = self.root.find('.//findBaseRegulationByDatesResponseHistory')
+        if base_regulations:
+            # Write Excel column headers
+            worksheet = g.excel.workbook.add_worksheet("Base regulations")
+            data = ('Action', 'Regulation ID', 'Information text', 'Start date', 'Regulation group', 'Regulation role type')
+            worksheet.write_row('A1', data, g.excel.format_bold)
+            worksheet.set_column(0, 0, 30)
+            worksheet.set_column(0, 1, 20)
+            worksheet.set_column(2, 2, 40)
+            worksheet.set_column(3, 5, 20)
+            worksheet.freeze_panes(1, 0)
+
+            # Get data
+            base_regulations = base_regulations.findall("BaseRegulation")
+            for base_regulation in base_regulations:
+                row_count += 1
+                BaseRegulation(base_regulation, worksheet, row_count)
 
     def get_measures(self):
         row_count = 0
@@ -228,17 +248,17 @@ class XmlFile(object):
             for measure in measures:
                 row_count += 1
                 measure_objects.append(Measure(measure, worksheet, row_count))
-            
+
             measure_objects = sorted(measure_objects, key=lambda x: x.measure_type_id, reverse=False)
             measure_objects = sorted(measure_objects, key=lambda x: x.goods_nomenclature_item_id, reverse=False)
             measure_objects = sorted(measure_objects, key=lambda x: x.operation_text, reverse=False)
-            
+
             row_count = 0
             for measure in measure_objects:
                 row_count += 1
                 measure.row_count = row_count
                 measure.write_data()
-                
+
             range = 'A1:M' + str(row_count)
             worksheet.autofilter(range)
 
@@ -265,7 +285,7 @@ class XmlFile(object):
                 worksheet.set_column(1, 7, 20)
                 worksheet.set_column(3, 3, 50)
                 worksheet.freeze_panes(1, 0)
-                
+
                 commodity_objects = []
                 for commodity in commodities:
                     row_count += 1
@@ -274,14 +294,14 @@ class XmlFile(object):
                 commodity_objects = sorted(commodity_objects, key=lambda x: x.product_line_suffix, reverse=False)
                 commodity_objects = sorted(commodity_objects, key=lambda x: x.goods_nomenclature_item_id, reverse=False)
                 commodity_objects = sorted(commodity_objects, key=lambda x: x.operation_text, reverse=False)
-                
+
                 row_count = 0
                 for commodity in commodity_objects:
                     if commodity.description_string != "":
                         row_count += 1
                         commodity.row_count = row_count
                         commodity.write_data()
-                        
+
                 range = 'A1:H' + str(row_count)
                 worksheet.autofilter(range)
 
