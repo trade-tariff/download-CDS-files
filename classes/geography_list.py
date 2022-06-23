@@ -3,6 +3,7 @@ from classes.database import Database
 
 class GeographyList(object):
     def __init__(self):
+        print("Creating list of geographical areas")
         self.geography_list = []
         self.geography_dict = {}
         self.geography_hjid_dict = {}
@@ -27,7 +28,8 @@ class GeographyList(object):
             self.geography_list.append(geo)
             self.geography_dict[row[2]] = row[3]
             self.geography_hjid_dict[hjid] = row[2] + " - " + row[3]
-        
+
+
 class GeographicalArea(object):
     def __init__(self, geographical_area_sid, parent_geographical_area_group_sid, geographical_area_id, description, geographical_code, validity_start_date, validity_end_date, hjid):
         self.geographical_area_sid = geographical_area_sid
@@ -38,4 +40,3 @@ class GeographicalArea(object):
         self.validity_start_date = validity_start_date
         self.validity_end_date = validity_end_date
         self.hjid = hjid
-        

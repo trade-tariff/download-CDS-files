@@ -47,18 +47,18 @@ class Parser(object):
         print("Writing quota balances")
         d = Database()
         rows = d.run_query(sql)
-        fields = ['Order number', 'Definition ID', 'Definition start', 'Latest balance', 'Description'] 
+        fields = ['Order number', 'Definition ID', 'Definition start', 'Latest balance', 'Description']
         with open(balance_path, mode='w') as csv_file:
             write = csv.writer(csv_file)
             write.writerow(fields)
             write.writerows(rows)
-    
+
     def check_exists(self, filename):
         filename = filename.replace("xml", "xlsx")
         xlsx_filename = os.path.join(self.xlsx_path, filename)
         exists = os.path.exists(xlsx_filename)
         return exists
-    
+
     def get_codes(self):
         g.code_lists = {}
         for i in range(0, 10):
@@ -77,17 +77,17 @@ class Parser(object):
                     if line_count != 0:
                         code = Classification(row[0], row[1], row[2], row[3], row[4])
                         codes.append(code)
-                    
+
                     line_count += 1
-                    
+
             g.code_lists[code_key] = codes
 
     def get_quota_definitions(self):
         g.definition_list = {}
         d = Database()
-        sql = """select quota_definition_sid, quota_order_number_id, m.goods_nomenclature_item_id 
+        sql = """select quota_definition_sid, quota_order_number_id, m.goods_nomenclature_item_id
         from quota_definitions qd, measures m
-        where m.ordernumber = qd.quota_order_number_id 
+        where m.ordernumber = qd.quota_order_number_id
         and qd.validity_start_date >= '2021-01-01'
         and m.validity_start_date >= '2021-01-01'
         order by 1, 2, 3;"""
@@ -102,6 +102,5 @@ class Parser(object):
                 g.definition_list["sid_" + str(quota_definition_sid)].append(goods_nomenclature_item_id)
             else:
                 g.definition_list["sid_" + str(quota_definition_sid)].append(goods_nomenclature_item_id)
-
 
         a = 1
