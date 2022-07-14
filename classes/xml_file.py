@@ -361,13 +361,11 @@ class XmlFile(object):
 
     def get_quota_definitions(self):
         row_count = 0
-        quota_definitions = self.root.find(
-            './/findQuotaDefinitionByDatesResponseHistory')
+        quota_definitions = self.root.find('.//findQuotaDefinitionByDatesResponseHistory')
         if quota_definitions:
             # Write Excel column headers
             worksheet = g.excel.workbook.add_worksheet("Quota definitions")
-            worksheet.write(
-                'A1', "Please be careful when checking quota balances - each file may contains multiple updates on the same quota definition", g.excel.format_bold)
+            worksheet.write('A1', "Please be careful when checking quota balances - each file may contains multiple updates on the same quota definition", g.excel.format_bold)
 
             data = ('Action', 'Quota order number', 'Balance updates', "Sample commodities", 'SID',
                     'Critical state', 'Critical threshold', 'Initial volume', 'Volume',
@@ -383,12 +381,10 @@ class XmlFile(object):
             quota_definition_objects = []
             for quota_definition in quota_definitions:
                 row_count += 1
-                quota_definition_object = QuotaDefinition(
-                    quota_definition, worksheet, row_count)
+                quota_definition_object = QuotaDefinition(quota_definition, worksheet, row_count)
                 quota_definition_objects.append(quota_definition_object)
 
-            quota_definition_objects = sorted(
-                quota_definition_objects, key=lambda x: x.quota_order_number_id, reverse=False)
+            quota_definition_objects = sorted(quota_definition_objects, key=lambda x: x.quota_order_number_id, reverse=False)
 
             row_count = 3
             for quota_definition_object in quota_definition_objects:

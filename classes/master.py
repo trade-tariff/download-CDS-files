@@ -5,12 +5,12 @@ class Master(object):
     def __init__(self, elem):
         try:
             self.operation = elem.find("metainfo/opType").text
-        except:
+        except Exception as e:
             self.operation = ""
         try:
             self.national = 1 if elem.find(
                 "metainfo/origin").text == "N" else 0
-        except:
+        except Exception as e:
             self.national = 0
 
         self.expand_operation()
@@ -63,3 +63,12 @@ class Master(object):
             return ""
         else:
             return d[8:10] + "/" + d[5:7] + "/" + d[0:4]
+
+    @staticmethod
+    def format_date_ymd(d):
+        if d is None:
+            return ""
+        elif d == "":
+            return ""
+        else:
+            return d[0:4] + "-" + d[5:7] + "-" + d[8:10]

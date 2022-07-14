@@ -1,4 +1,6 @@
 import sys
+import xml.etree.ElementTree as ET
+
 from classes.master import Master
 from classes.database import Database
 import classes.globals as g
@@ -45,7 +47,7 @@ class QuotaDefinition(Master):
 
         self.comm_code_string = self.comm_code_string.strip()
         self.comm_code_string = self.comm_code_string.strip(",")
-        
+
     def write_data(self):
         # Write the Excel
         self.worksheet.write(self.row_count, 0, self.operation_text + " definition", g.excel.format_wrap)
@@ -64,15 +66,18 @@ class QuotaDefinition(Master):
     def get_balance_events(self):
         self.quota_balance_event_string = ""
         quota_balance_events = self.elem.findall('quotaBalanceEvent')
-        if quota_balance_events:
-            if g.USE_LATEST_UPDATE_ONLY:
-                quota_balance_event_count = len(quota_balance_events)
-                quota_balance_event = quota_balance_events[quota_balance_event_count - 1]
-                obj = QuotaBalanceEvent(quota_balance_event)
-                self.quota_balance_event_string += obj.quota_balance_event_string + "\n"
-            else:
-                for quota_balance_event in quota_balance_events:
-                    obj = QuotaBalanceEvent(quota_balance_event)
-                    self.quota_balance_event_string += obj.quota_balance_event_string + "\n"
-        
-        self.quota_balance_event_string = self.quota_balance_event_string.strip("\n")
+        quota_balance_events_list = []
+        for quota_balance_event in quota_balance_events:
+            obj = QuotaBalanceEvent(quota_balance_event)
+            quota_balance_events_list.append(obj)
+
+        quota_balance_events_list = sorted(quota_balance_events_list, key=lambda x: x.occurrence_timestamp)
+        # if self.quota_order_number_id == "052105":
+        #     for quota_balance_event in quota_balance_events_list:
+        #         print(quota_balance_event.occurrence_timestamp)
+
+        if quota_balance_events_list:
+            quota_balance_event_count = len(quota_balance_events_list)
+            quota_balance_event = quota_balance_events_list[quota_balance_event_count - 1]
+            self.quota_balance_event_string = quota_balance_event.quota_balance_event_string + "\n"
+            self.quota_balance_event_string = self.quota_balance_event_string.strip("\n")
