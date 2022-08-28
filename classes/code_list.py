@@ -14,7 +14,7 @@ class CodeList(object):
         self.folder = os.path.join(self.folder, "resources")
         self.folder = os.path.join(self.folder, "csv")
 
-        if 1 > 2:
+        if 1 > 0:
             for i in range(0, 10):
                 self.classifications = []
                 chapter = str(i) + "%"
