@@ -45,12 +45,12 @@
 
 ## Searching in EU-provided Taric files
 
-`python3 xpath.py m 3643189 tgb`
-`python3 xpath.py c 2933199070 tgb`
-`python3 xpath.py mt 750 tgb`
+- `python3 xpath.py m 3643189 tgb`
+- `python3 xpath.py c 2933199070 tgb`
+- `python3 xpath.py mt 750 tgb`
 
 ## Searching in DIT-provided Taric files (UK tariff)
 
-`python3 xpath.py m 20138293 dit`
-`python3 xpath.py c 2933199070 dit`
-`python3 xpath.py mt 750 dit`
+- `python3 xpath.py m 20138293 dit`
+- `python3 xpath.py c 2933199070 dit`
+- `python3 xpath.py mt 750 dit`
