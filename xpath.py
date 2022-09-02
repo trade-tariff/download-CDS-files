@@ -9,30 +9,37 @@ from classes.xpath_markdown import XpathMarkdown
 def cater_for_shortcuts(query_class):
     if query_class in ("m", "measures"):
         query_class = "measure"
-    if query_class in ("c", "commodities"):
+    elif query_class in ("c", "commodities"):
         query_class = "commodity"
-    if query_class in ("mt", "measure_types"):
+    elif query_class in ("mt", "measure_types"):
         query_class = "measure_type"
     return query_class
 
-if len(sys.argv) < 3:
-    print("Provide class and instance")
+def cleanse_scope(scope):
+    if scope in ("eu", "xi"):
+        scope = "tgb"
+    elif scope in ("uk"):
+        scope = "dit"
+    return scope
+
+if len(sys.argv) < 4:
+    print("Provide class, instance and scope")
     sys.exit()
 else:
     query_class = sys.argv[1]
     query_id = sys.argv[2]
+    scope = sys.argv[3]
 
 query_class = cater_for_shortcuts(query_class)
-
-# query_class = "commodity"
-# query_id = "2933199070"
-
-# query_class = "measure"
-# query_id = "20138292"
+scope = cleanse_scope(scope)
 
 load_dotenv('.env')
-folder = os.getenv('DIT_DATA_FOLDER')
-# folder = "/Users/mattlavis/sites and projects/1. Online Tariff/tariff data/DIT/"
+
+if scope == "dit":
+    folder = os.getenv('DIT_DATA_FOLDER')
+else:
+    folder = os.getenv('TGB_DATA_FOLDER')
+
 files = glob.glob(folder + '/*.xml')
 files = sorted(files)
 records = []
@@ -42,5 +49,5 @@ for filename in files:
     records += ret
 
 a = 1
-xpm = XpathMarkdown(records, query_class, query_id)
+xpm = XpathMarkdown(records, query_class, query_id, scope)
 xpm.write_markdown()

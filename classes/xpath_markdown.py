@@ -4,10 +4,11 @@ from pathlib import Path
 
 
 class XpathMarkdown(object):
-    def __init__(self, records, query_class, query_id):
+    def __init__(self, records, query_class, query_id, scope):
         self.records = records
         self.query_class = query_class
         self.query_id = query_id
+        self.scope = scope
         self.markdown = ""
         self.make_folders()
         self.get_filename()
@@ -15,11 +16,21 @@ class XpathMarkdown(object):
     def make_folders(self):
         resources_folder = os.path.join(os.getcwd(), "resources")
         queries_folder = os.path.join(resources_folder, "queries")
-        self.commodities_folder = os.path.join(queries_folder, "commodities")
-        self.measures_folder = os.path.join(queries_folder, "measures")
-        self.measure_types_folder = os.path.join(queries_folder, "measure_types")
+        dit_folder = os.path.join(queries_folder, "dit")
+        tgb_folder = os.path.join(queries_folder, "tgb")
+
+        if self.scope == "dit":
+            parent_folder = dit_folder
+        else:
+            parent_folder = tgb_folder
+
+        self.commodities_folder = os.path.join(parent_folder, "commodities")
+        self.measures_folder = os.path.join(parent_folder, "measures")
+        self.measure_types_folder = os.path.join(parent_folder, "measure_types")
 
         self.make_folder(queries_folder)
+        self.make_folder(dit_folder)
+        self.make_folder(tgb_folder)
         self.make_folder(self.commodities_folder)
         self.make_folder(self.measures_folder)
         self.make_folder(self.measure_types_folder)
