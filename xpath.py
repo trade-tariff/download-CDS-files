@@ -5,12 +5,24 @@ from dotenv import load_dotenv
 from classes.xpath_query import XpathQuery
 from classes.xpath_markdown import XpathMarkdown
 
+
+def cater_for_shortcuts(query_class):
+    if query_class in ("m", "measures"):
+        query_class = "measure"
+    if query_class in ("c", "commodities"):
+        query_class = "commodity"
+    if query_class in ("mt", "measure_types"):
+        query_class = "measure_type"
+    return query_class
+
 if len(sys.argv) < 3:
     print("Provide class and instance")
     sys.exit()
 else:
     query_class = sys.argv[1]
     query_id = sys.argv[2]
+
+query_class = cater_for_shortcuts(query_class)
 
 # query_class = "commodity"
 # query_id = "2933199070"
