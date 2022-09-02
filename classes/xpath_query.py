@@ -24,6 +24,8 @@ class XpathQuery(object):
             ret = self.run_query_commodity()
         elif self.query_class == "measure":
             ret = self.run_query_measure()
+        elif self.query_class == "measure_type":
+            ret = self.run_query_measure_type()
         return ret
 
     def run_query_commodity(self):
@@ -53,6 +55,23 @@ class XpathQuery(object):
             geographical_area_id = self.get_value(elem, "oub:measure/oub:geographical.area")
             filename = Path(self.filename).stem
             obj = (filename, self.query_id, transaction_id, goods_nomenclature_item_id, validity_start_date, validity_end_date, measure_type_id, geographical_area_id, goods_nomenclature_sid)
+            ret.append(obj)
+        return ret
+
+    def run_query_measure_type(self):
+        ret = []
+        self.query = ".//oub:measure[oub:measure.type = '{item}']/..".format(item=self.query_id)
+        for elem in self.root.findall(self.query, self.namespaces):
+            transaction_id = self.get_value(elem, "oub:transaction.id")
+            measure_sid = self.get_value(elem, "oub:measure.sid")
+            goods_nomenclature_sid = self.get_value(elem, "oub:measure/oub:goods.nomenclature.sid")
+            goods_nomenclature_item_id = self.get_value(elem, "oub:measure/oub:goods.nomenclature.item.id")
+            validity_start_date = self.get_value(elem, "oub:measure/oub:validity.start.date")
+            validity_end_date = self.get_value(elem, "oub:measure/oub:validity.end.date")
+            measure_type_id = self.get_value(elem, "oub:measure/oub:measure.type")
+            geographical_area_id = self.get_value(elem, "oub:measure/oub:geographical.area")
+            filename = Path(self.filename).stem
+            obj = (filename, self.query_id, transaction_id, measure_sid, goods_nomenclature_item_id, validity_start_date, validity_end_date, measure_type_id, geographical_area_id, goods_nomenclature_sid)
             ret.append(obj)
         return ret
 

@@ -17,9 +17,12 @@ class XpathMarkdown(object):
         queries_folder = os.path.join(resources_folder, "queries")
         self.commodities_folder = os.path.join(queries_folder, "commodities")
         self.measures_folder = os.path.join(queries_folder, "measures")
+        self.measure_types_folder = os.path.join(queries_folder, "measure_types")
+
         self.make_folder(queries_folder)
         self.make_folder(self.commodities_folder)
         self.make_folder(self.measures_folder)
+        self.make_folder(self.measure_types_folder)
 
     def make_folder(self, folder):
         try:
@@ -33,12 +36,16 @@ class XpathMarkdown(object):
             self.filepath = os.path.join(self.commodities_folder, self.filename)
         elif self.query_class == "measure":
             self.filepath = os.path.join(self.measures_folder, self.filename)
+        elif self.query_class == "measure_type":
+            self.filepath = os.path.join(self.measure_types_folder, self.filename)
 
     def write_markdown(self):
         if self.query_class == "commodity":
             self.write_markdown_commodity()
         elif self.query_class == "measure":
             self.write_markdown_measure()
+        elif self.query_class == "measure_type":
+            self.write_markdown_measure_type()
 
     def write_markdown_commodity(self):
         self.markdown += "# Instances of commodity code {item}\n\n".format(item=self.query_id)
@@ -57,10 +64,28 @@ class XpathMarkdown(object):
 
     def write_markdown_measure(self):
         # obj = (filename, self.query_id, transaction_id, goods_nomenclature_item_id, validity_start_date, validity_end_date, measure_type_id, geographical_area_id, goods_nomenclature_sid)
-        self.markdown += "# Instances of measure {item}\n\n".format(item=self.query_id)
+        self.markdown += "# Instances of measure SID {item}\n\n".format(item=self.query_id)
         for record in self.records:
             self.markdown += "## {item}\n\n".format(item=record[0])
             self.markdown += "- Transaction ID = {item}\n".format(item=record[2])
+            self.markdown += "- Commodity code = {item}\n".format(item=record[3])
+            self.markdown += "- Start date = {item}\n".format(item=record[4])
+            self.markdown += "- End date = {item}\n".format(item=record[5])
+            self.markdown += "- Measure type ID = {item}\n".format(item=record[6])
+            self.markdown += "- Geographical area ID = {item}\n".format(item=record[7])
+            self.markdown += "- Goods nomenclature SID = {item}\n\n".format(item=record[8])
+
+        f = open(self.filepath, "w")
+        f.write(self.markdown)
+        f.close()
+
+    def write_markdown_measure_type(self):
+        # obj = (filename, self.query_id, transaction_id, goods_nomenclature_item_id, validity_start_date, validity_end_date, measure_type_id, geographical_area_id, goods_nomenclature_sid)
+        self.markdown += "# Instances of measure type {item}\n\n".format(item=self.query_id)
+        for record in self.records:
+            self.markdown += "## {item}\n\n".format(item=record[0])
+            self.markdown += "- Transaction ID = {item}\n".format(item=record[1])
+            self.markdown += "- Measure SID = {item}\n".format(item=record[2])
             self.markdown += "- Commodity code = {item}\n".format(item=record[3])
             self.markdown += "- Start date = {item}\n".format(item=record[4])
             self.markdown += "- End date = {item}\n".format(item=record[5])
