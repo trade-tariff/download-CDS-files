@@ -48,9 +48,15 @@ class XpathMarkdown(object):
             self.write_markdown_measure_type()
 
     def write_markdown_commodity(self):
+        self.get_unique_filenames()
         self.markdown += "# Instances of commodity code {item}\n\n".format(item=self.query_id)
+        self.markdown += "## Files containing item\n\n"
+        for filename in self.unique_filenames:
+            self.markdown += "- {item}\n".format(item=filename)
+
+        self.markdown += "\n## Instances\n\n"
         for record in self.records:
-            self.markdown += "## {filename}\n\n".format(filename=record[0])
+            self.markdown += "### {filename}\n\n".format(filename=record[0])
             self.markdown += "- Transaction ID = {item}\n".format(item=record[2])
             self.markdown += "- Commodity code = {item}\n".format(item=record[1])
             self.markdown += "- PLS = {item}\n".format(item=record[3])
@@ -63,10 +69,15 @@ class XpathMarkdown(object):
         f.close()
 
     def write_markdown_measure(self):
-        # obj = (filename, self.query_id, transaction_id, goods_nomenclature_item_id, validity_start_date, validity_end_date, measure_type_id, geographical_area_id, goods_nomenclature_sid)
+        self.get_unique_filenames()
         self.markdown += "# Instances of measure SID {item}\n\n".format(item=self.query_id)
+        self.markdown += "## Files containing item\n\n"
+        for filename in self.unique_filenames:
+            self.markdown += "- {item}\n".format(item=filename)
+
+        self.markdown += "\n## Instances\n\n"
         for record in self.records:
-            self.markdown += "## {item}\n\n".format(item=record[0])
+            self.markdown += "### {item}\n\n".format(item=record[0])
             self.markdown += "- Transaction ID = {item}\n".format(item=record[2])
             self.markdown += "- Commodity code = {item}\n".format(item=record[3])
             self.markdown += "- Start date = {item}\n".format(item=record[4])
@@ -80,10 +91,15 @@ class XpathMarkdown(object):
         f.close()
 
     def write_markdown_measure_type(self):
-        # obj = (filename, self.query_id, transaction_id, goods_nomenclature_item_id, validity_start_date, validity_end_date, measure_type_id, geographical_area_id, goods_nomenclature_sid)
+        self.get_unique_filenames()
         self.markdown += "# Instances of measure type {item}\n\n".format(item=self.query_id)
+        self.markdown += "## Files containing item\n\n"
+        for filename in self.unique_filenames:
+            self.markdown += "- {item}\n".format(item=filename)
+
+        self.markdown += "\n## Instances\n\n"
         for record in self.records:
-            self.markdown += "## {item}\n\n".format(item=record[0])
+            self.markdown += "### {item}\n\n".format(item=record[0])
             self.markdown += "- Transaction ID = {item}\n".format(item=record[1])
             self.markdown += "- Measure SID = {item}\n".format(item=record[2])
             self.markdown += "- Commodity code = {item}\n".format(item=record[3])
@@ -96,3 +112,9 @@ class XpathMarkdown(object):
         f = open(self.filepath, "w")
         f.write(self.markdown)
         f.close()
+
+    def get_unique_filenames(self):
+        self.unique_filenames = []
+        for record in self.records:
+            if record[0] not in self.unique_filenames:
+                self.unique_filenames.append(record[0])
