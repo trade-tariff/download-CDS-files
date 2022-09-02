@@ -2,19 +2,31 @@
 
 ## Implementation steps
 
-- Create and activate a virtual environment, e.g.
+### Create and activate a virtual environment, e.g.
 
   - `python3 -m venv venv/`
   - `source venv/bin/activate`
 
-- Environment variable settings
+### Environment variable settings
 
-  - domain=root domain from which to download GZIP files
-  - client_secret
-  - client_id
-  - DATABASE_UK=postgres connection string
-  - IMPORT_FOLDER=folder to which to copy files, for import
-  - OVERWRITE_XLSX=0|1 - 0 will run parser on all files; 1 will only parse files that are missing
+#### Connectivity to download server
+
+- domain=<STRING>
+- client_secret=<STRING>
+- client_id=<STRING>
+
+#### Data
+
+- DATABASE_UK=<DATABASE CONNECTION STRING>
+- IMPORT_FOLDER=<STRING>
+- OVERWRITE_XLSX=1 | 0
+
+#### Data queries
+
+- DIT_DATA_FOLDER=<STRING>
+- TGB_DATA_FOLDER=<STRING>
+
+### Environment variable settings
 
 - Install necessary Python modules via `pip3 install -r requirements.txt`
 
@@ -43,14 +55,14 @@
 
 ## Searching for content using XPath
 
-## Searching in EU-provided Taric files
+### Searching in EU-provided Taric files
 
-- `python3 xpath.py m 3643189 tgb`
-- `python3 xpath.py c 2933199070 tgb`
-- `python3 xpath.py mt 750 tgb`
+- `python3 xpath.py m 3643189 tgb` (searches for measure with SID 3643189 in EU files)
+- `python3 xpath.py c 2933199070 tgb` (searches for commodity with code 2933199070 in EU files)
+- `python3 xpath.py mt 750 tgb` (searches for measures of type 750 in EU files)
 
-## Searching in DIT-provided Taric files (UK tariff)
+### Searching in DIT-provided Taric files (UK tariff)
 
-- `python3 xpath.py m 20138293 dit`
-- `python3 xpath.py c 2933199070 dit`
-- `python3 xpath.py mt 750 dit`
+- `python3 xpath.py m 20138293 dit` (searches for measure with SID 20138293 in UK files)
+- `python3 xpath.py c 2933199070 dit` (searches for commodity with code 2933199070 in UK files)
+- `python3 xpath.py mt 750 dit` (searches for measures of type 750 in UK files)
