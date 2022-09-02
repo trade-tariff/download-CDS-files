@@ -11,20 +11,20 @@
 
 #### Connectivity to download server
 
-- domain=<STRING>
-- client_secret=<STRING>
-- client_id=<STRING>
+- domain=STRING
+- client_secret=STRING
+- client_id=STRING
 
 #### Data
 
-- DATABASE_UK=<DATABASE CONNECTION STRING>
-- IMPORT_FOLDER=<STRING>
+- DATABASE_UK=DATABASE CONNECTION STRING
+- IMPORT_FOLDER=STRING
 - OVERWRITE_XLSX=1 | 0
 
 #### Data queries
 
-- DIT_DATA_FOLDER=<STRING>
-- TGB_DATA_FOLDER=<STRING>
+- DIT_DATA_FOLDER=STRING
+- TGB_DATA_FOLDER=STRING
 
 ### Environment variable settings
 
