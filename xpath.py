@@ -13,6 +13,8 @@ def cater_for_shortcuts(query_class):
         query_class = "commodity"
     elif query_class in ("mt", "measure_types"):
         query_class = "measure_type"
+    elif query_class in ("geo", "geography", "geographical_areas", "g", "geographical_area_id"):
+        query_class = "geographical_area"
     return query_class
 
 def cleanse_scope(scope):
