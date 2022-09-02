@@ -18,6 +18,8 @@
 
 - Install necessary Python modules via `pip3 install -r requirements.txt`
 
+---
+
 ## Usage
 
 ### To download CDS extract files:
@@ -34,5 +36,21 @@
 ### To run all three of the steps above:
 `python3 parse.py`
 
-### Greppage
+### Grepping
 `python3 grep.py 058032`
+
+---
+
+## Searching for content using XPath
+
+## Searching in EU-provided Taric files
+
+`python3 xpath.py m 3643189 tgb`
+`python3 xpath.py c 2933199070 tgb`
+`python3 xpath.py mt 750 tgb`
+
+## Searching in DIT-provided Taric files (UK tariff)
+
+`python3 xpath.py m 20138293 dit`
+`python3 xpath.py c 2933199070 dit`
+`python3 xpath.py mt 750 dit`
