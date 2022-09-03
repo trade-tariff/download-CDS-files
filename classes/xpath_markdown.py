@@ -18,9 +18,12 @@ class XpathMarkdown(object):
         queries_folder = os.path.join(resources_folder, "queries")
         dit_folder = os.path.join(queries_folder, "dit")
         tgb_folder = os.path.join(queries_folder, "tgb")
+        cds_folder = os.path.join(queries_folder, "cds")
 
         if self.scope == "dit":
             parent_folder = dit_folder
+        elif self.scope == "cds":
+            parent_folder = cds_folder
         else:
             parent_folder = tgb_folder
 
@@ -31,6 +34,7 @@ class XpathMarkdown(object):
 
         self.make_folder(queries_folder)
         self.make_folder(dit_folder)
+        self.make_folder(cds_folder)
         self.make_folder(tgb_folder)
 
         self.make_folder(self.commodities_folder)
@@ -75,10 +79,10 @@ class XpathMarkdown(object):
         self.markdown += "\n## Instances\n\n"
         for record in self.records:
             self.markdown += "### {filename}\n\n".format(filename=record[0])
-            self.markdown += "- Transaction ID = {item}\n".format(item=record[2])
+            self.markdown += "- Transaction ID = {item}\n".format(item=record[4])
             self.markdown += "- Commodity code = {item}\n".format(item=record[1])
             self.markdown += "- PLS = {item}\n".format(item=record[3])
-            self.markdown += "- SID = {item}\n".format(item=record[4])
+            self.markdown += "- SID = {item}\n".format(item=record[2])
             self.markdown += "- Start date = {item}\n".format(item=record[5])
             self.markdown += "- End date = {item}\n\n".format(item=record[6])
 

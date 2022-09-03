@@ -22,6 +22,8 @@ def cleanse_scope(scope):
         scope = "tgb"
     elif scope in ("uk"):
         scope = "dit"
+    elif scope in ("cds"):
+        scope = "cds"
     return scope
 
 if len(sys.argv) < 4:
@@ -39,14 +41,16 @@ load_dotenv('.env')
 
 if scope == "dit":
     folder = os.getenv('DIT_DATA_FOLDER')
-else:
+elif scope == "tgb":
     folder = os.getenv('TGB_DATA_FOLDER')
+else:
+    folder = os.getenv('CDS_DATA_FOLDER')
 
 files = glob.glob(folder + '/*.xml')
 files = sorted(files)
 records = []
 for filename in files:
-    xpq = XpathQuery(filename, query_class, query_id)
+    xpq = XpathQuery(filename, query_class, query_id, scope)
     ret = xpq.run_query()
     records += ret
 
