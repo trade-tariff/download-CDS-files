@@ -36,6 +36,8 @@ class XpathQuery(object):
                 ret = self.run_query_measure_type_taric()
             elif self.query_class == "geographical_area":
                 ret = self.run_query_geographical_area_taric()
+            elif self.query_class == "commodity_measure":
+                ret = self.run_query_commodity_measure_taric()
         else:
             if self.query_class == "commodity":
                 ret = self.run_query_commodity_cds()
@@ -45,6 +47,8 @@ class XpathQuery(object):
                 ret = self.run_query_measure_type_cds()
             elif self.query_class == "geographical_area":
                 ret = self.run_query_geographical_area_cds()
+            elif self.query_class == "commodity_measure":
+                ret = self.run_query_commodity_measure_cds()
         return ret
 
     def run_query_commodity_taric(self):
@@ -162,6 +166,23 @@ class XpathQuery(object):
     def run_query_geographical_area_cds(self):
         ret = []
         self.query = ".//Measure/geographicalArea[geographicalAreaId = '{item}']/..".format(item=self.query_id)
+        for elem in self.root.findall(self.query, self.namespaces):
+            transaction_id = "n/a"
+            measure_sid = self.get_value(elem, "sid")
+            goods_nomenclature_sid = self.get_value(elem, "goodsNomenclature/sid")
+            goods_nomenclature_item_id = self.get_value(elem, "goodsNomenclature/goodsNomenclatureItemId")
+            validity_start_date = self.get_value(elem, "validityStartDate")
+            validity_end_date = self.get_value(elem, "validityEndDate")
+            measure_type_id = self.get_value(elem, "measureType/measureTypeId")
+            geographical_area_id = self.get_value(elem, "geographicalArea/geographicalAreaId")
+            filename = Path(self.filename).stem
+            obj = (filename, self.query_id, transaction_id, measure_sid, goods_nomenclature_item_id, validity_start_date, validity_end_date, measure_type_id, geographical_area_id, goods_nomenclature_sid)
+            ret.append(obj)
+        return ret
+
+    def run_query_commodity_measure_cds(self):
+        ret = []
+        self.query = ".//Measure/goodsNomenclature[goodsNomenclatureItemId = '{item}']/..".format(item=self.query_id)
         for elem in self.root.findall(self.query, self.namespaces):
             transaction_id = "n/a"
             measure_sid = self.get_value(elem, "sid")
