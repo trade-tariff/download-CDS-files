@@ -33,7 +33,7 @@ class MeasureCondition(Master):
                 self.certificate = "n/a"
             self.output += "Certificate: " + self.certificate + ", "
             self.output += "Condition code: " + self.condition_code + " (" + self.condition_code_description + "), "
-            self.output += "Action code: " + self.action_code + " (" + self.condition_code_description + ")<br /><br />"
+            self.output += "Action code: " + self.action_code + " (" + self.action_code_description + ")<br /><br />"
             
         else:
             self.output = ""

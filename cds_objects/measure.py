@@ -22,7 +22,6 @@ class Measure(Master):
         self.duty_expression_array = []
         self.measure_condition_array = []
         self.get_data()
-        # self.write_data()
 
     def get_data(self):
         self.measure_sid = Master.process_null_int(self.elem.find("sid"))
@@ -53,8 +52,7 @@ class Measure(Master):
         self.get_measure_excluded_geographical_areas()
         self.get_footnotes()
 
-        change = MeasureChange(
-            self.measure_sid, self.goods_nomenclature_item_id, "Measure", self.operation)
+        change = MeasureChange(self.measure_sid, self.goods_nomenclature_item_id, "Measure", self.operation)
         g.change_list.append(change)
 
     def get_geographical_area_description(self):
@@ -69,12 +67,9 @@ class Measure(Master):
 
     def write_data(self):
         # Write the Excel
-        self.worksheet.write(
-            self.row_count, 0, self.operation_text + " measure", g.excel.format_wrap)
-        self.worksheet.write(
-            self.row_count, 1, self.goods_nomenclature_item_id, g.excel.format_wrap)
-        self.worksheet.write(
-            self.row_count, 2, self.additional_code, g.excel.format_wrap)
+        self.worksheet.write(self.row_count, 0, self.operation_text + " measure", g.excel.format_wrap)
+        self.worksheet.write(self.row_count, 1, self.goods_nomenclature_item_id, g.excel.format_wrap)
+        self.worksheet.write(self.row_count, 2, self.additional_code, g.excel.format_wrap)
         self.worksheet.write(self.row_count, 3, self.measure_type_id + " (" + self.measure_type_description + ")", g.excel.format_wrap)
         self.worksheet.write(self.row_count, 4, self.geographical_area_id + " (" + self.geographical_area_description + ")", g.excel.format_wrap)
         self.worksheet.write(self.row_count, 5, self.ordernumber, g.excel.format_wrap)
@@ -111,12 +106,10 @@ class Measure(Master):
 
         if measure_conditions:
             for measure_condition in measure_conditions:
-                measure_condition_string = MeasureCondition(
-                    measure_condition).output
+                measure_condition_string = MeasureCondition(measure_condition).output
                 if measure_condition_string != "":
                     self.measure_condition_string += measure_condition_string
-        self.measure_condition_string_excel = self.measure_condition_string.replace(
-            "<br />", "\n")
+        self.measure_condition_string_excel = self.measure_condition_string.replace("<br />", "\n")
 
         self.measure_condition_array = [
             "Measure conditions",
