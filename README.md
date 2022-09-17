@@ -67,4 +67,4 @@
 - `python3 xpath.py m 20138293 dit` (searches for measure with SID 20138293 in UK files)
 - `python3 xpath.py c 2933199070 dit` (searches for commodity with code 2933199070 in UK files)
 - `python3 xpath.py mt 750 dit` (searches for measures of type 750 in UK files)
-   `python3 xpath.py g AL dit` (searches for measures on geo area AL in UK files)
+- `python3 xpath.py g AL dit` (searches for measures on geo area AL in UK files)
