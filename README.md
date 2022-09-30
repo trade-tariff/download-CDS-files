@@ -1,6 +1,6 @@
 # Download and parse files from the CDS download service
 
-## Implementation steps
+## Implementation
 
 ### Create and activate a virtual environment, e.g.
 
@@ -11,26 +11,32 @@
 
 #### Connectivity to download server
 
-- domain=STRING
+- domain=root domain from which to download GZIP files
 - client_secret=STRING
 - client_id=STRING
 
 #### Data
 
-- DATABASE_UK=DATABASE CONNECTION STRING
+- DATABASE_UK=DATABASE CONNECTION STRING (needed for geographical area list)
 - IMPORT_FOLDER=STRING
 - OVERWRITE_XLSX=1 | 0
 
-#### Data queries
+#### Send grid mail API
 
-- DIT_DATA_FOLDER=STRING
-- TGB_DATA_FOLDER=STRING
+- SENDGRID_API_KEY=STRING
+- FROM_EMAIL=in the form EMAIL ADDRESS | NAME
 
-### Environment variable settings
+  e.g. test@test.com|Geoff Test
+
+- TO_EMAILS=List of email addresses: comma-separated in the form EMAIL ADDRESS | FIRST_NAME | LAST_NAME
+
+  e.g. test@test.com|Geoff|Test,test2@test.com|Mary|Test
+
+- SEND_MAIL=1 | 0
+
+### Install packages
 
 - Install necessary Python modules via `pip3 install -r requirements.txt`
-
----
 
 ## Usage
 
@@ -46,25 +52,4 @@
 `python3 dest.py`
 
 ### To run all three of the steps above:
-`python3 parse.py`
-
-### Grepping
-`python3 grep.py 058032`
-
----
-
-## Searching for content using XPath
-
-### Searching in EU-provided Taric files
-
-- `python3 xpath.py m 3643189 tgb` (searches for measure with SID 3643189 in EU files)
-- `python3 xpath.py c 2933199070 tgb` (searches for commodity with code 2933199070 in EU files)
-- `python3 xpath.py mt 750 tgb` (searches for measures of type 750 in EU files)
-- `python3 xpath.py g AL tgb` (searches for measures on geo area AL in EU files)
-
-### Searching in DIT-provided Taric files (UK tariff)
-
-- `python3 xpath.py m 20138293 dit` (searches for measure with SID 20138293 in UK files)
-- `python3 xpath.py c 2933199070 dit` (searches for commodity with code 2933199070 in UK files)
-- `python3 xpath.py mt 750 dit` (searches for measures of type 750 in UK files)
-- `python3 xpath.py g AL dit` (searches for measures on geo area AL in UK files)
+`python3 run.py`

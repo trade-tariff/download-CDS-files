@@ -30,9 +30,7 @@ class MeasureChange(object):
             is_leaf = False
             index = -1
             number_indents = None
-            if self.goods_nomenclature_item_id == "0102210000":
-                a = 1
-                
+
             for code in code_list:
                 index += 1
                 if (code.goods_nomenclature_item_id == self.goods_nomenclature_item_id) and (str(code.productline_suffix) == "80"):

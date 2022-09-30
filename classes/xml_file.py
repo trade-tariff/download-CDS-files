@@ -59,12 +59,14 @@ class XmlFile(object):
         html_content = """
         <p>Dear all,</p>
         <p>Please find attached the latest CDS updates in Excel format for {edition}.</p>
-        <p>This data was loaded to the Online Tariff by 05:00 on {edition}.</p>
-        <p>Thanks,</p>
+        <p>This data was loaded to the Online Tariff by 06:30 on {edition}.</p>
+        <p>If you have any queries with the content of this file,
+        please contact us on <a href="mailto:trade-tariff-support@transformuk.com">trade-tariff-support@transformuk.com</a></p>
+        <p>Thank you,</p>
         <p>The Online Tariff Team.</p>""".format(edition=edition)
 
         subject = "CDS data load " + edition
-        s = SendgridMailer(subject, html_content, g.excel.excel_filename)
+        s = SendgridMailer(subject, html_content, [g.excel.excel_filename])
         s.send()
 
     def write_changes(self):

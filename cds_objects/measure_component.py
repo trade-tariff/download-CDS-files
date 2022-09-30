@@ -95,15 +95,13 @@ class MeasureComponent(Master):
             self.duty_string += self.measurement_unit_code
 
         else:
-            print("Found an unexpected DE", self.duty_expression_id)
-
+            print("Unexpected duty expression found", self.duty_expression_id)
 
         self.duty_string = self.duty_string.replace("  ", " ")
-        a = 1
 
     def get_measurement_unit(self, s):
         if s == "ASV":
-            return "% vol"  # 3302101000
+            return "% vol"
         if s == "NAR":
             return "item"
         elif s == "CCT":

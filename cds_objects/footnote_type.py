@@ -1,9 +1,5 @@
-import os
 import xml.etree.ElementTree as ET
-from mdutils.mdutils import MdUtils
-from mdutils import Html
 from classes.master import Master
-import classes.functions as func
 import classes.globals as g
 
 
@@ -27,7 +23,6 @@ class FootnoteType(Master):
         else:
             self.description = ""
 
-        
     def write_data(self):
         # Write the Excel
         self.worksheet.write(self.row_count, 0, self.operation_text + " footnote type", g.excel.format_wrap)
