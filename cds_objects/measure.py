@@ -56,11 +56,7 @@ class Measure(Master):
         g.change_list.append(change)
 
     def get_geographical_area_description(self):
-        try:
-            self.geographical_area_description = g.geography_dict[self.geographical_area_id]
-        except Exception as e:
-            print("Failure on geo area", self.geographical_area_id)
-            sys.exit()
+        self.geographical_area_description = g.geography_dict[self.geographical_area_id]
 
     def get_measure_type_description(self):
         self.measure_type_description = g.measure_type_dict[self.measure_type_id]
