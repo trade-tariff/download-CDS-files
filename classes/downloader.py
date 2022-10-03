@@ -102,7 +102,11 @@ class Downloader(object):
                         else:
                             print("There was a problem in unzipping that archive.")
                     except Exception as ex:
-                        print("Failed attempt to download file from", download_url, file_entry.filename)
+                        print(
+                            "Failed attempt to download file from",
+                            download_url,
+                            file_entry.filename,
+                        )
 
     def make_folder(self, folder_name):
         try:
@@ -159,7 +163,11 @@ class Downloader(object):
                         else:
                             print("There was a problem in unzipping that archive.")
                     except Exception as ex:
-                        print("Failed attempt to download file from", download_url, file_entry.filename)
+                        print(
+                            "Failed attempt to download file from",
+                            download_url,
+                            file_entry.filename,
+                        )
 
     def download_files_annual(self):
         # Access data
@@ -192,9 +200,9 @@ class Downloader(object):
                 zip_filename = os.path.join(zip_path, filename)
 
                 if os.path.isfile(zip_filename):
-                    print(f'{filename} already exists, skipping...')
+                    print(f"{filename} already exists, skipping...")
                 else:
-                    print(f'Downloading {filename}...')
+                    print(f"Downloading {filename}...")
                     try:
                         urllib.request.urlretrieve(download_url, zip_filename)
                         zfile = zipfile.ZipFile(zip_filename)
@@ -211,4 +219,8 @@ class Downloader(object):
                         else:
                             print("There was a problem in unzipping that archive.")
                     except Exception as ex:
-                        print("Failed attempt to download file from", download_url, file_entry.filename)
+                        print(
+                            "Failed attempt to download file from",
+                            download_url,
+                            file_entry.filename,
+                        )
