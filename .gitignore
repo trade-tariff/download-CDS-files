@@ -109,7 +109,6 @@ temp/
 .vscode/
 .DS_Store
 resources/json/*.json
-resources/csv/*.csv
 resources/xlsx/*.xlsx
 resources/xml/*.xml
 resources/zip/*.gzip
