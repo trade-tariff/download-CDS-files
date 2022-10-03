@@ -2,21 +2,22 @@ import requests
 import ssl
 import sys
 import os
-import wget
 from dotenv import load_dotenv
 import zipfile
 from shutil import copyfile
 from classes.cds_file import CdsFile
+import urllib.request
 
 
 class Downloader(object):
     def __init__(self):
         # Get credentials
-        load_dotenv('.env')
-        self.domain = os.getenv('domain')
-        self.client_secret = os.getenv('client_secret')
-        self.client_id = os.getenv('client_id')
-        self.IMPORT_FOLDER = os.getenv('IMPORT_FOLDER')
+        load_dotenv(".env")
+        self.domain = os.getenv("domain")
+        self.client_secret = os.getenv("client_secret")
+        self.client_id = os.getenv("client_id")
+        self.IMPORT_FOLDER = os.getenv("IMPORT_FOLDER")
+        self.COPY_TO_IMPORT_FOLDER = int(os.getenv("COPY_TO_IMPORT_FOLDER"))
         self.cds_files = []
 
         self.get_access_token()
@@ -28,7 +29,9 @@ class Downloader(object):
     def get_access_token(self):
         # Request auth token
         url = self.domain + "oauth/token"
-        payload = "client_secret={}&client_id={}&grant_type=client_credentials".format(self.client_secret, self.client_id)
+        payload = "client_secret={}&client_id={}&grant_type=client_credentials".format(
+            self.client_secret, self.client_id
+        )
         headers = {"content-type": "application/x-www-form-urlencoded"}
         response = requests.request("POST", url, data=payload, headers=headers)
         if response.status_code != 200:
@@ -44,17 +47,17 @@ class Downloader(object):
         headers = {
             "User-Agent": "Trade Tariff Backend",
             "Accept": "application/vnd.hmrc.1.0+json",
-            "Authorization": "Bearer " + self.access_token
+            "Authorization": "Bearer " + self.access_token,
         }
         response = requests.request("GET", url, headers=headers)
 
         files = response.json()
         for file_entry in files:
             cds_file = CdsFile()
-            cds_file.filename = file_entry['filename']
-            cds_file.download_url = file_entry['downloadURL']
+            cds_file.filename = file_entry["filename"]
+            cds_file.download_url = file_entry["downloadURL"]
             self.cds_files.append(cds_file)
-            print(file_entry['filename'])
+            print(file_entry["filename"])
 
         # sys.exit()
         self.cds_files = sorted(self.cds_files, key=lambda x: x.filename, reverse=True)
@@ -63,19 +66,9 @@ class Downloader(object):
         zip_path = os.path.join(resource_path, "zip")
         xml_path = os.path.join(resource_path, "xml")
 
-        # Make the folders
-        try:
-            os.mkdir(resource_path)
-        except Exception as e:
-            pass
-        try:
-            os.mkdir(zip_path)
-        except Exception as e:
-            pass
-        try:
-            os.mkdir(xml_path)
-        except Exception as e:
-            pass
+        self.make_folder(resource_path)
+        self.make_folder(zip_path)
+        self.make_folder(xml_path)
 
         # Download the data files
         for file_entry in self.cds_files:
@@ -85,26 +78,34 @@ class Downloader(object):
                 zip_filename = os.path.join(zip_path, filename)
 
                 if os.path.isfile(zip_filename):
-                    print(f'{filename} already exists, skipping...')
+                    print(f"{filename} already exists, skipping...")
                 else:
-                    print(f'Downloading {filename}...')
-                    # try:
-                    wget.download(download_url, out=zip_path, bar=None)
-                    zfile = zipfile.ZipFile(zip_filename)
-                    zfile.extractall(xml_path)
-                    unzipped_files = zfile.filelist
-                    if unzipped_files:
-                        xml_filename = unzipped_files[0].filename
+                    print(f"Downloading {filename}...")
+                    try:
+                        urllib.request.urlretrieve(download_url, zip_filename)
+                        zfile = zipfile.ZipFile(zip_filename)
+                        zfile.extractall(xml_path)
+                        unzipped_files = zfile.filelist
+                        # __import__("pdb").set_trace()
+                        if unzipped_files:
+                            xml_filename = unzipped_files[0].filename
 
-                        # Copy to the import folder for running the import
-                        src = os.path.join(xml_path, xml_filename)
-                        dest = os.path.join(self.IMPORT_FOLDER, "CDS")
-                        dest = os.path.join(dest, xml_filename)
-                        copyfile(src, dest)
-                    else:
-                        print("There was a problem in unzipping that archive.")
-                    # except Exception as ex:
-                    #     print("Failed attempt to download file from", download_url, file_entry.filename)
+                            if self.COPY_TO_IMPORT_FOLDER == 1:
+                                # Copy to the import folder for running the import
+                                src = os.path.join(xml_path, xml_filename)
+                                dest = os.path.join(self.IMPORT_FOLDER, "CDS")
+                                dest = os.path.join(dest, xml_filename)
+                                copyfile(src, dest)
+                        else:
+                            print("There was a problem in unzipping that archive.")
+                    except Exception as ex:
+                        print("Failed attempt to download file from", download_url, file_entry.filename)
+
+    def make_folder(self, folder_name):
+        try:
+            os.mkdir(folder_name)
+        except Exception as e:
+            pass
 
     def download_files_monthly(self):
         # Access data
@@ -112,19 +113,18 @@ class Downloader(object):
         headers = {
             "User-Agent": "Trade Tariff Backend",
             "Accept": "application/vnd.hmrc.1.0+json",
-            "Authorization": "Bearer " + self.access_token
+            "Authorization": "Bearer " + self.access_token,
         }
         response = requests.request("GET", url, headers=headers)
 
         files = response.json()
         for file_entry in files:
             cds_file = CdsFile()
-            cds_file.filename = file_entry['filename']
-            cds_file.download_url = file_entry['downloadURL']
+            cds_file.filename = file_entry["filename"]
+            cds_file.download_url = file_entry["downloadURL"]
             self.cds_files.append(cds_file)
-            print(file_entry['filename'])
+            print(file_entry["filename"])
 
-        # sys.exit()
         self.cds_files = sorted(self.cds_files, key=lambda x: x.filename, reverse=True)
 
         for file_entry in self.cds_files:
@@ -137,11 +137,11 @@ class Downloader(object):
                 zip_filename = os.path.join(zip_path, filename)
 
                 if os.path.isfile(zip_filename):
-                    print(f'{filename} already exists, skipping...')
+                    print(f"{filename} already exists, skipping...")
                 else:
-                    print(f'Downloading {filename}...')
+                    print(f"Downloading {filename}...")
                     try:
-                        wget.download(download_url, out=zip_path, bar=None)
+                        urllib.request.urlretrieve(download_url, zip_filename)
                         zfile = zipfile.ZipFile(zip_filename)
                         zfile.extractall(xml_path)
                         unzipped_files = zfile.filelist
@@ -164,17 +164,17 @@ class Downloader(object):
         headers = {
             "User-Agent": "Trade Tariff Backend",
             "Accept": "application/vnd.hmrc.1.0+json",
-            "Authorization": "Bearer " + self.access_token
+            "Authorization": "Bearer " + self.access_token,
         }
         response = requests.request("GET", url, headers=headers)
 
         files = response.json()
         for file_entry in files:
             cds_file = CdsFile()
-            cds_file.filename = file_entry['filename']
-            cds_file.download_url = file_entry['downloadURL']
+            cds_file.filename = file_entry["filename"]
+            cds_file.download_url = file_entry["downloadURL"]
             self.cds_files.append(cds_file)
-            print(file_entry['filename'])
+            print(file_entry["filename"])
 
         # sys.exit()
         self.cds_files = sorted(self.cds_files, key=lambda x: x.filename, reverse=True)
@@ -193,7 +193,7 @@ class Downloader(object):
                 else:
                     print(f'Downloading {filename}...')
                     try:
-                        wget.download(download_url, out=zip_path, bar=None)
+                        urllib.request.urlretrieve(download_url, zip_filename)
                         zfile = zipfile.ZipFile(zip_filename)
                         zfile.extractall(xml_path)
                         unzipped_files = zfile.filelist
