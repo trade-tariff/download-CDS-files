@@ -11,9 +11,9 @@
 
 #### Connectivity to download server
 
-- domain=root domain from which to download GZIP files
-- client_secret=STRING
-- client_id=STRING
+- DOMAIN=root domain from which to download GZIP files
+- CLIENT_SECRET=STRING
+- CLIENT_ID=STRING
 
 #### Data
 

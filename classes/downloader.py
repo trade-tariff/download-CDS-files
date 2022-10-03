@@ -13,10 +13,10 @@ class Downloader(object):
     def __init__(self):
         # Get credentials
         load_dotenv(".env")
-        self.domain = os.getenv("domain")
-        self.client_secret = os.getenv("client_secret")
-        self.client_id = os.getenv("client_id")
-        self.IMPORT_FOLDER = os.getenv("IMPORT_FOLDER")
+        self.domain = os.getenv("GOVUK_API_DOMAIN")
+        self.client_id = os.getenv("CLIENT_ID")
+        self.client_secret = os.getenv("CLIENT_SECRET")
+        self.import_folder = os.getenv("IMPORT_FOLDER")
         try:
             self.COPY_TO_IMPORT_FOLDER = int(os.getenv("COPY_TO_IMPORT_FOLDER"))
         except Exception as e:
@@ -205,7 +205,7 @@ class Downloader(object):
 
                             # Copy to the import folder for running the import
                             src = os.path.join(xml_path, xml_filename)
-                            dest = os.path.join(self.IMPORT_FOLDER, "CDS")
+                            dest = os.path.join(self.import_folder, "CDS")
                             dest = os.path.join(dest, xml_filename)
                             copyfile(src, dest)
                         else:
