@@ -1,13 +1,7 @@
 import os
-import sys
-import csv
-from datetime import datetime
 from dotenv import load_dotenv
 
-import classes.globals as g
 import classes.functions as f
-from classes.database import Database
-from classes.classification import Classification
 from .xml_file import XmlFile
 
 
