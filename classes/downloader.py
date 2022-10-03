@@ -96,7 +96,7 @@ class Downloader(object):
                             if self.COPY_TO_IMPORT_FOLDER == 1:
                                 # Copy to the import folder for running the import
                                 src = os.path.join(xml_path, xml_filename)
-                                dest = os.path.join(self.IMPORT_FOLDER, "CDS")
+                                dest = os.path.join(self.import_folder, "CDS")
                                 dest = os.path.join(dest, xml_filename)
                                 copyfile(src, dest)
                         else:
@@ -153,7 +153,7 @@ class Downloader(object):
 
                             # Copy to the import folder for running the import
                             src = os.path.join(xml_path, xml_filename)
-                            dest = os.path.join(self.IMPORT_FOLDER, "CDS")
+                            dest = os.path.join(self.import_folder, "CDS")
                             dest = os.path.join(dest, xml_filename)
                             copyfile(src, dest)
                         else:
