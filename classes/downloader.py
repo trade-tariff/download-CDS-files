@@ -17,7 +17,10 @@ class Downloader(object):
         self.client_secret = os.getenv("client_secret")
         self.client_id = os.getenv("client_id")
         self.IMPORT_FOLDER = os.getenv("IMPORT_FOLDER")
-        self.COPY_TO_IMPORT_FOLDER = int(os.getenv("COPY_TO_IMPORT_FOLDER"))
+        try:
+            self.COPY_TO_IMPORT_FOLDER = int(os.getenv("COPY_TO_IMPORT_FOLDER"))
+        except Exception as e:
+            self.COPY_TO_IMPORT_FOLDER = 0
         self.cds_files = []
 
         self.get_access_token()
