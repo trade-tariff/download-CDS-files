@@ -1,15 +1,10 @@
-import sys
-import xml.etree.ElementTree as ET
-
 from classes.master import Master
-from classes.database import Database
 import classes.globals as g
 from cds_objects.quota_balance_event import QuotaBalanceEvent
 from cds_objects.change import QuotaDefinitionChange
 
 
 class QuotaDefinition(Master):
-
     def __init__(self, elem, worksheet, row_count):
         Master.__init__(self, elem)
         self.elem = elem
@@ -39,14 +34,15 @@ class QuotaDefinition(Master):
         g.change_list.append(change)
 
     def get_sample_comm_codes(self):
-        sql = "select distinct(goods_nomenclature_item_id) from measures where ordernumber = '" + self.quota_order_number_id + "' order by 1 limit 5"
-        d = Database()
-        rows = d.run_query(sql)
-        for row in rows:
-            self.comm_code_string += row[0] + ", "
+        if self.quota_order_number_id in g.quota_order_number_dict.keys():
+            for goods_nomenclature_item_id in g.quota_order_number_dict[self.quota_order_number_id]:
+                self.comm_code_string += goods_nomenclature_item_id + ", "
 
-        self.comm_code_string = self.comm_code_string.strip()
-        self.comm_code_string = self.comm_code_string.strip(",")
+            self.comm_code_string = self.comm_code_string.strip()
+            self.comm_code_string = self.comm_code_string.strip(",")
+        else:
+            self.comm_code_string = ""
+
 
     def write_data(self):
         # Write the Excel
@@ -72,9 +68,6 @@ class QuotaDefinition(Master):
             quota_balance_events_list.append(obj)
 
         quota_balance_events_list = sorted(quota_balance_events_list, key=lambda x: x.occurrence_timestamp)
-        # if self.quota_order_number_id == "052105":
-        #     for quota_balance_event in quota_balance_events_list:
-        #         print(quota_balance_event.occurrence_timestamp)
 
         if quota_balance_events_list:
             quota_balance_event_count = len(quota_balance_events_list)
