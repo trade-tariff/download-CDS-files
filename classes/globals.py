@@ -1,4 +1,10 @@
-from classes.reference_data import ActionCodeList, MeasureTypeList, ConditionCodeList, GeographyList
+from classes.reference_data import (
+    ActionCodeList,
+    MeasureTypeList,
+    ConditionCodeList,
+    GeographyList,
+    QuotaOrderNumberList,
+)
 
 # Get a list of all geographical areas descriptions by id and hjid
 list = GeographyList()
@@ -24,6 +30,12 @@ list = ConditionCodeList()
 list.load()
 
 condition_code_dict = list.condition_code_dict
+
+# Get a list of all condition codes
+list = QuotaOrderNumberList()
+list.load()
+
+quota_order_number_dict = list.quota_order_number_dict
 
 change_list = []
 code_lists = []

@@ -8,9 +8,10 @@ load_dotenv(".env")
 
 
 class ReferenceDataHandler(object):
-    def __init__(self, path):
+    def __init__(self, path, yield_response=False):
         self._url = os.getenv("OTT_HOST") + path
         self._headers = {"content-type": "application/json"}
+        self._yield_response = yield_response
 
     def __enter__(self):
         try:
@@ -18,7 +19,11 @@ class ReferenceDataHandler(object):
                 "GET", self._url, headers=self._headers
             ).json()
 
-            return response_json["data"]
+            if self._yield_response:
+                return response_json
+            else:
+                return response_json["data"]
+
         except Exception:
             print("Failed to download reference data", self._url)
             sys.exit()
@@ -44,6 +49,7 @@ class GeographyList(object):
                 self.geography_hjid_dict[
                     geographical_area["attributes"]["hjid"]
                 ] = geographical_area["attributes"]["description"]
+
 
 class MeasureTypeList(object):
     def __init__(self):
@@ -81,3 +87,45 @@ class ConditionCodeList(object):
                 self.condition_code_dict[
                     measure_condition_code["id"]
                 ] = measure_condition_code["attributes"]["description"]
+
+
+class QuotaOrderNumberList(object):
+    def __init__(self):
+        self.quota_order_number_dict = {}
+
+    def load(self):
+        with ReferenceDataHandler(
+            "/api/v2/quota_order_numbers", yield_response=True
+        ) as response:
+            included = response["included"]
+
+            def is_quota_definition(include):
+                return include["type"] == "quota_definition"
+
+            def is_measure(include):
+                return include["type"] == "measure"
+
+            all_quota_definitions = list(filter(is_quota_definition, included))
+            all_measures = list(filter(is_measure, included))
+
+            for quota_definition in all_quota_definitions:
+                quota_definition_commodity_codes = set(())
+                quota_definition_measures = []
+
+                for measure in quota_definition["relationships"]["measures"]["data"]:
+                    quota_definition_measures.append(measure["id"])
+
+                def is_applicable_measure(include):
+                    return include["id"] in quota_definition_measures
+
+                applicable_measures = list(filter(is_applicable_measure, all_measures))
+
+                for measure in applicable_measures:
+                    quota_definition_commodity_codes.add(
+                        measure["attributes"]["goods_nomenclature_item_id"]
+                    )
+
+                if applicable_measures:
+                    self.quota_order_number_dict[
+                        quota_definition["attributes"]["quota_order_number_id"]
+                    ] = sorted(quota_definition_commodity_codes)
