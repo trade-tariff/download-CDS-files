@@ -1,36 +1,39 @@
 # using SendGrid's Python Library
 # https://github.com/sendgrid/sendgrid-python
 import os
-import sys
 import base64
 import platform
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import (Mail, Attachment, FileContent, FileName, FileType, Disposition)
+from sendgrid.helpers.mail import (
+    Mail,
+    Attachment,
+    FileContent,
+    FileName,
+    FileType,
+    Disposition,
+)
 from dotenv import load_dotenv
 
 
 class SendgridMailer(object):
     def __init__(self, subject, html_content, attachment_list=None):
-        load_dotenv('.env')
-        self.send_mail = int(os.getenv('SEND_MAIL'))
-        self.SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+        load_dotenv(".env")
+        self.send_mail = int(os.getenv("SEND_MAIL"))
+        self.SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
         if self.send_mail == 0:
             return
 
         self.attachment_list = attachment_list
         self.subject = subject
         self.html_content = html_content
-        self.from_email = os.getenv('FROM_EMAIL')
-        self.to_email_string = os.getenv('TO_EMAILS')
+        self.from_email = os.getenv("FROM_EMAIL")
+        self.to_email_string = os.getenv("TO_EMAILS")
         self.parse_origin_email()
         self.parse_destination_emails()
 
     def parse_origin_email(self):
         tmp = self.from_email.split("|")
-        self.from_email = (
-            tmp[0],
-            tmp[1]
-        )
+        self.from_email = (tmp[0], tmp[1])
 
     def send(self):
         if self.send_mail == 0:
@@ -46,7 +49,8 @@ class SendgridMailer(object):
             to_emails=self.to_emails,
             subject=self.subject,
             html_content=self.html_content,
-            is_multiple=is_multiple)
+            is_multiple=is_multiple,
+        )
 
         if self.attachment_list is not None:
             for attachment in self.attachment_list:
@@ -55,14 +59,14 @@ class SendgridMailer(object):
 
         try:
             sg = SendGridAPIClient(self.SENDGRID_API_KEY)
-            response = sg.send(message)
+            sg.send(message)
 
         except Exception as e:
             print(e.message)
 
     def create_attachment(self, file):
         encoded_file = None
-        with open(file, 'rb') as f:
+        with open(file, "rb") as f:
             data = f.read()
             f.close()
 
@@ -77,8 +81,10 @@ class SendgridMailer(object):
         attachment = Attachment(
             FileContent(encoded_file),
             FileName(actual_filename),
-            FileType('application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
-            Disposition('attachment')
+            FileType(
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            ),
+            Disposition("attachment"),
         )
         return attachment
 

@@ -1,0 +1,61 @@
+version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@2.0.3
+  slack: circleci/slack@4.3.0
+
+jobs:
+  lint:
+      docker:
+        - image: cimg/python:3.10.7
+      steps:
+          - checkout
+          - run:
+              name: install flake8
+              command: pip install flake8==5.0.4
+          - run:
+              name: run flake8
+              command: flake8 .
+  test:
+    docker:
+      - image: cimg/python:3.10.7
+    steps:
+      - checkout
+      - restore_cache:
+          key: deps-1.0.0-{{ checksum "requirements.txt" }}
+      - run:
+          name: "Setup environment"
+          command: |
+            python -m venv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
+      - save_cache:
+          key: deps-1.0.0-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
+      - aws-cli/install
+      - run:
+          name: "Integrate functionality"
+          command: |
+            touch .env
+            source venv/bin/activate
+            python download.py
+            python parse.py
+            aws s3 sync --exclude ".*" --dryrun --size-only resources/xlsx/ s3://$REPORTING_BUCKET_NAME/changes/uk/
+
+workflows:
+  ci:
+    jobs:
+      - lint:
+          filters:
+            branches:
+              ignore:
+                - main
+                - /^dependabot\/.*/
+      - test:
+          context: trade-tariff
+          filters:
+            branches:
+              ignore:
+                - main
+                - /^dependabot\/.*/

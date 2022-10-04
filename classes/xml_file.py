@@ -1,5 +1,4 @@
 import os
-import sys
 import json
 import xml.etree.ElementTree as ET
 import classes.globals as g
@@ -56,17 +55,11 @@ class XmlFile(object):
 
     def mail_extract(self):
         edition = self.execution_date.split("T")[0]
-        html_content = """
-        <p>Dear all,</p>
-        <p>Please find attached the latest CDS updates in Excel format for {edition}.</p>
-        <p>This data was loaded to the Online Tariff by 06:30 on {edition}.</p>
-        <p>If you have any queries with the content of this file,
-        please contact us on <a href="mailto:trade-tariff-support@transformuk.com">trade-tariff-support@transformuk.com</a></p>
-        <p>Thank you,</p>
-        <p>The Online Tariff Team.</p>""".format(edition=edition)
+        html_content = open("resources/email_template.html", "r").read()
+        formatted_html_content = html_content.format(edition=edition)
 
         subject = "CDS data load " + edition
-        s = SendgridMailer(subject, html_content, [g.excel.excel_filename])
+        s = SendgridMailer(subject, formatted_html_content, [g.excel.excel_filename])
         s.send()
 
     def write_changes(self):
@@ -76,7 +69,6 @@ class XmlFile(object):
         self.json_filename = os.path.join(self.json_path, self.json_filename)
 
         my_dict = {}
-        changes = []
         consolidated_commodities = []
         measures = []
         commodities = []
@@ -113,13 +105,19 @@ class XmlFile(object):
 
     def get_footnote_types(self):
         row_count = 0
-        footnote_types = self.root.find('.//findFootnoteTypeByDatesResponse')
+        footnote_types = self.root.find(".//findFootnoteTypeByDatesResponse")
         if footnote_types:
             # Write Excel column headers
             worksheet = g.excel.workbook.add_worksheet("Footnote types")
-            data = ('Action', 'Footnote type ID', 'Application code',
-                    'Start date', 'End date', 'Description')
-            worksheet.write_row('A1', data, g.excel.format_bold)
+            data = (
+                "Action",
+                "Footnote type ID",
+                "Application code",
+                "Start date",
+                "End date",
+                "Description",
+            )
+            worksheet.write_row("A1", data, g.excel.format_bold)
             worksheet.set_column(0, 0, 30)
             worksheet.set_column(1, 4, 20)
             worksheet.set_column(5, 5, 50)
@@ -133,13 +131,20 @@ class XmlFile(object):
 
     def get_footnotes(self):
         row_count = 0
-        footnotes = self.root.find('.//findFootnoteByDatesResponse')
+        footnotes = self.root.find(".//findFootnoteByDatesResponse")
         if footnotes:
             # Write Excel column headers
             worksheet = g.excel.workbook.add_worksheet("Footnotes")
-            data = ('Action', 'Combined', 'Footnote type ID',
-                    'Footnote ID', 'Start date', 'End date', 'Description')
-            worksheet.write_row('A1', data, g.excel.format_bold)
+            data = (
+                "Action",
+                "Combined",
+                "Footnote type ID",
+                "Footnote ID",
+                "Start date",
+                "End date",
+                "Description",
+            )
+            worksheet.write_row("A1", data, g.excel.format_bold)
             worksheet.set_column(0, 5, 20)
             worksheet.set_column(6, 6, 50)
             worksheet.freeze_panes(1, 0)
@@ -152,14 +157,19 @@ class XmlFile(object):
 
     def get_additional_codes(self):
         row_count = 0
-        additional_codes = self.root.find(
-            './/findAdditionalCodeByDatesResponse')
+        additional_codes = self.root.find(".//findAdditionalCodeByDatesResponse")
         if additional_codes:
             # Write Excel column headers
             worksheet = g.excel.workbook.add_worksheet("Additional codes")
-            data = ('Action', 'Additional code type', 'Additional code ID',
-                    'Start date', 'End date', 'Description')
-            worksheet.write_row('A1', data, g.excel.format_bold)
+            data = (
+                "Action",
+                "Additional code type",
+                "Additional code ID",
+                "Start date",
+                "End date",
+                "Description",
+            )
+            worksheet.write_row("A1", data, g.excel.format_bold)
             worksheet.set_column(0, 0, 30)
             worksheet.set_column(1, 4, 20)
             worksheet.set_column(5, 5, 50)
@@ -169,19 +179,23 @@ class XmlFile(object):
             additional_codes = additional_codes.findall("AdditionalCode")
             for additional_code in additional_codes:
                 row_count += 1
-                AdditionalCode(additional_code,
-                               worksheet, row_count)
+                AdditionalCode(additional_code, worksheet, row_count)
 
     def get_certificates(self):
         row_count = 0
-        certificates = self.root.find(
-            './/findCertificateByDatesResponse')
+        certificates = self.root.find(".//findCertificateByDatesResponse")
         if certificates:
             # Write Excel column headers
             worksheet = g.excel.workbook.add_worksheet("Certificates")
-            data = ('Action', 'Certificate code type', 'Certificate code',
-                    'Start date', 'End date', 'Description')
-            worksheet.write_row('A1', data, g.excel.format_bold)
+            data = (
+                "Action",
+                "Certificate code type",
+                "Certificate code",
+                "Start date",
+                "End date",
+                "Description",
+            )
+            worksheet.write_row("A1", data, g.excel.format_bold)
             worksheet.set_column(0, 0, 30)
             worksheet.set_column(1, 4, 20)
             worksheet.set_column(5, 5, 50)
@@ -195,12 +209,19 @@ class XmlFile(object):
 
     def get_base_regulations(self):
         row_count = 0
-        base_regulations = self.root.find('.//findBaseRegulationByDatesResponseHistory')
+        base_regulations = self.root.find(".//findBaseRegulationByDatesResponseHistory")
         if base_regulations:
             # Write Excel column headers
             worksheet = g.excel.workbook.add_worksheet("Base regulations")
-            data = ('Action', 'Regulation ID', 'Information text', 'Start date', 'Regulation group', 'Regulation role type')
-            worksheet.write_row('A1', data, g.excel.format_bold)
+            data = (
+                "Action",
+                "Regulation ID",
+                "Information text",
+                "Start date",
+                "Regulation group",
+                "Regulation role type",
+            )
+            worksheet.write_row("A1", data, g.excel.format_bold)
             worksheet.set_column(0, 0, 30)
             worksheet.set_column(0, 1, 20)
             worksheet.set_column(2, 2, 40)
@@ -215,26 +236,26 @@ class XmlFile(object):
 
     def get_measures(self):
         row_count = 0
-        measures = self.root.find('.//findMeasureByDatesResponseHistory')
+        measures = self.root.find(".//findMeasureByDatesResponseHistory")
         if measures:
             # Write Excel column headers
             worksheet = g.excel.workbook.add_worksheet("Measures")
             data = (
-                'Action',
-                'Commodity code',
-                'Additional code',
-                'Measure type',
-                'Geographical area',
-                'Quota order number',
-                'Start date',
-                'End date',
-                'Duty',
-                'Excluded areas',
-                'Footnotes',
-                'Conditions',
-                'SID'
+                "Action",
+                "Commodity code",
+                "Additional code",
+                "Measure type",
+                "Geographical area",
+                "Quota order number",
+                "Start date",
+                "End date",
+                "Duty",
+                "Excluded areas",
+                "Footnotes",
+                "Conditions",
+                "SID",
             )
-            worksheet.write_row('A1', data, g.excel.format_bold)
+            worksheet.write_row("A1", data, g.excel.format_bold)
             worksheet.set_column(0, 0, 30)
             worksheet.set_column(1, 7, 20)
             worksheet.set_column(3, 4, 40)
@@ -251,9 +272,17 @@ class XmlFile(object):
                 row_count += 1
                 measure_objects.append(Measure(measure, worksheet, row_count))
 
-            measure_objects = sorted(measure_objects, key=lambda x: x.measure_type_id, reverse=False)
-            measure_objects = sorted(measure_objects, key=lambda x: x.goods_nomenclature_item_id, reverse=False)
-            measure_objects = sorted(measure_objects, key=lambda x: x.operation_text, reverse=False)
+            measure_objects = sorted(
+                measure_objects, key=lambda x: x.measure_type_id, reverse=False
+            )
+            measure_objects = sorted(
+                measure_objects,
+                key=lambda x: x.goods_nomenclature_item_id,
+                reverse=False,
+            )
+            measure_objects = sorted(
+                measure_objects, key=lambda x: x.operation_text, reverse=False
+            )
 
             row_count = 0
             for measure in measure_objects:
@@ -261,28 +290,28 @@ class XmlFile(object):
                 measure.row_count = row_count
                 measure.write_data()
 
-            range = 'A1:M' + str(row_count)
+            range = "A1:M" + str(row_count)
             worksheet.autofilter(range)
 
     def get_commodities(self):
         row_count = 0
-        commodities = self.root.find('.//findGoodsNomenclatureByDatesResponse')
+        commodities = self.root.find(".//findGoodsNomenclatureByDatesResponse")
         if commodities:
             commodities = commodities.findall("GoodsNomenclature")
             if commodities:
                 # Write Excel column headers
                 worksheet = g.excel.workbook.add_worksheet("Commodities")
                 data = (
-                    'Action',
-                    'Commodity code',
-                    'Product line suffix',
-                    'Description',
-                    'Start date',
-                    'End date',
-                    'Statistical indicator',
-                    'SID'
+                    "Action",
+                    "Commodity code",
+                    "Product line suffix",
+                    "Description",
+                    "Start date",
+                    "End date",
+                    "Statistical indicator",
+                    "SID",
                 )
-                worksheet.write_row('A1', data, g.excel.format_bold)
+                worksheet.write_row("A1", data, g.excel.format_bold)
                 worksheet.set_column(0, 0, 30)
                 worksheet.set_column(1, 7, 20)
                 worksheet.set_column(3, 3, 50)
@@ -291,11 +320,23 @@ class XmlFile(object):
                 commodity_objects = []
                 for commodity in commodities:
                     row_count += 1
-                    commodity_objects.append(GoodsNomenclature(commodity, worksheet, row_count))
+                    commodity_objects.append(
+                        GoodsNomenclature(commodity, worksheet, row_count)
+                    )
 
-                commodity_objects = sorted(commodity_objects, key=lambda x: x.product_line_suffix, reverse=False)
-                commodity_objects = sorted(commodity_objects, key=lambda x: x.goods_nomenclature_item_id, reverse=False)
-                commodity_objects = sorted(commodity_objects, key=lambda x: x.operation_text, reverse=False)
+                commodity_objects = sorted(
+                    commodity_objects,
+                    key=lambda x: x.product_line_suffix,
+                    reverse=False,
+                )
+                commodity_objects = sorted(
+                    commodity_objects,
+                    key=lambda x: x.goods_nomenclature_item_id,
+                    reverse=False,
+                )
+                commodity_objects = sorted(
+                    commodity_objects, key=lambda x: x.operation_text, reverse=False
+                )
 
                 row_count = 0
                 for commodity in commodity_objects:
@@ -304,18 +345,17 @@ class XmlFile(object):
                         commodity.row_count = row_count
                         commodity.write_data()
 
-                range = 'A1:H' + str(row_count)
+                range = "A1:H" + str(row_count)
                 worksheet.autofilter(range)
 
     def get_quota_order_numbers(self):
         row_count = 0
-        quotas = self.root.find(
-            './/findQuotaOrderNumberByDatesResponseHistory')
+        quotas = self.root.find(".//findQuotaOrderNumberByDatesResponseHistory")
         if quotas:
             # Write Excel column headers
             worksheet = g.excel.workbook.add_worksheet("Quota order numbers")
-            data = ('Action', 'SID', 'Order number', 'Start date', 'End date')
-            worksheet.write_row('A1', data, g.excel.format_bold)
+            data = ("Action", "SID", "Order number", "Start date", "End date")
+            worksheet.write_row("A1", data, g.excel.format_bold)
             worksheet.set_column(0, 0, 40)
             worksheet.set_column(1, 4, 20)
             worksheet.freeze_panes(1, 0)
@@ -328,17 +368,23 @@ class XmlFile(object):
 
     def get_geographical_areas(self):
         row_count = 0
-        geographical_areas = self.root.find(
-            './/findGeographicalAreaByDatesResponse')
+        geographical_areas = self.root.find(".//findGeographicalAreaByDatesResponse")
         if geographical_areas:
             # Write Excel column headers
             worksheet = g.excel.workbook.add_worksheet("Geographical areas")
             data = (
-                'Action', 'Geographical area ID', 'SID',
-                "Start date", 'End date',
-                'Description(s)', 'Current memberships', 'All memberships', 'Parent group SID')
+                "Action",
+                "Geographical area ID",
+                "SID",
+                "Start date",
+                "End date",
+                "Description(s)",
+                "Current memberships",
+                "All memberships",
+                "Parent group SID",
+            )
             widths = [30, 20, 15, 15, 20, 50, 70, 70, 15]
-            worksheet.write_row('A1', data, g.excel.format_bold)
+            worksheet.write_row("A1", data, g.excel.format_bold)
             for i in range(0, len(widths)):
                 worksheet.set_column(i, i, widths[i])
             worksheet.freeze_panes(1, 0)
@@ -349,11 +395,15 @@ class XmlFile(object):
             for geographical_area in geographical_areas:
                 row_count += 1
                 geographical_area_object = GeographicalArea(
-                    geographical_area, worksheet, row_count)
+                    geographical_area, worksheet, row_count
+                )
                 geographical_area_objects.append(geographical_area_object)
 
             geographical_area_objects = sorted(
-                geographical_area_objects, key=lambda x: x.geographical_area_id, reverse=False)
+                geographical_area_objects,
+                key=lambda x: x.geographical_area_id,
+                reverse=False,
+            )
 
             row_count = 1
             for geographical_area_object in geographical_area_objects:
@@ -363,17 +413,34 @@ class XmlFile(object):
 
     def get_quota_definitions(self):
         row_count = 0
-        quota_definitions = self.root.find('.//findQuotaDefinitionByDatesResponseHistory')
+        quota_definitions = self.root.find(
+            ".//findQuotaDefinitionByDatesResponseHistory"
+        )
         if quota_definitions:
             # Write Excel column headers
             worksheet = g.excel.workbook.add_worksheet("Quota definitions")
-            worksheet.write('A1', "Please be careful when checking quota balances - each file may contains multiple updates on the same quota definition", g.excel.format_bold)
+            worksheet.write(
+                "A1",
+                "Please be careful when checking quota balances - each file may contains multiple updates on the same quota definition",  # noqa: E501
+                g.excel.format_bold,
+            )
 
-            data = ('Action', 'Quota order number', 'Balance updates', "Sample commodities", 'SID',
-                    'Critical state', 'Critical threshold', 'Initial volume', 'Volume',
-                    'Maximum precision', 'Start date', 'End date')
+            data = (
+                "Action",
+                "Quota order number",
+                "Balance updates",
+                "Sample commodities",
+                "SID",
+                "Critical state",
+                "Critical threshold",
+                "Initial volume",
+                "Volume",
+                "Maximum precision",
+                "Start date",
+                "End date",
+            )
             widths = [30, 20, 50, 70, 20, 20, 20, 20, 20, 20, 20, 20]
-            worksheet.write_row('A3', data, g.excel.format_bold)
+            worksheet.write_row("A3", data, g.excel.format_bold)
             for i in range(0, len(widths)):
                 worksheet.set_column(i, i, widths[i])
             worksheet.freeze_panes(1, 0)
@@ -383,10 +450,16 @@ class XmlFile(object):
             quota_definition_objects = []
             for quota_definition in quota_definitions:
                 row_count += 1
-                quota_definition_object = QuotaDefinition(quota_definition, worksheet, row_count)
+                quota_definition_object = QuotaDefinition(
+                    quota_definition, worksheet, row_count
+                )
                 quota_definition_objects.append(quota_definition_object)
 
-            quota_definition_objects = sorted(quota_definition_objects, key=lambda x: x.quota_order_number_id, reverse=False)
+            quota_definition_objects = sorted(
+                quota_definition_objects,
+                key=lambda x: x.quota_order_number_id,
+                reverse=False,
+            )
 
             row_count = 3
             for quota_definition_object in quota_definition_objects:
@@ -395,7 +468,7 @@ class XmlFile(object):
                 row_count += 1
 
     def get_results_info(self):
-        results_info = self.root.find('ResultsInfo')
+        results_info = self.root.find("ResultsInfo")
         self.total_records = results_info.find("totalRecords").text
         self.execution_date = results_info.find("executionDate").text
 

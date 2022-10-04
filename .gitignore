@@ -108,4 +108,8 @@ csv/
 temp/
 .vscode/
 .DS_Store
-resources/
+resources/json/*.json
+resources/xlsx/*.xlsx
+resources/xml/*.xml
+resources/zip/*.gzip
+resources/*.tmp

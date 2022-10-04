@@ -13,13 +13,13 @@ class Downloader(object):
     def __init__(self):
         # Get credentials
         load_dotenv(".env")
-        self.domain = os.getenv("domain")
-        self.client_secret = os.getenv("client_secret")
-        self.client_id = os.getenv("client_id")
-        self.IMPORT_FOLDER = os.getenv("IMPORT_FOLDER")
+        self.domain = os.getenv("GOVUK_API_DOMAIN")
+        self.client_id = os.getenv("CLIENT_ID")
+        self.client_secret = os.getenv("CLIENT_SECRET")
+        self.import_folder = os.getenv("IMPORT_FOLDER")
         try:
             self.COPY_TO_IMPORT_FOLDER = int(os.getenv("COPY_TO_IMPORT_FOLDER"))
-        except Exception as e:
+        except Exception:
             self.COPY_TO_IMPORT_FOLDER = 0
         self.cds_files = []
 
@@ -96,18 +96,22 @@ class Downloader(object):
                             if self.COPY_TO_IMPORT_FOLDER == 1:
                                 # Copy to the import folder for running the import
                                 src = os.path.join(xml_path, xml_filename)
-                                dest = os.path.join(self.IMPORT_FOLDER, "CDS")
+                                dest = os.path.join(self.import_folder, "CDS")
                                 dest = os.path.join(dest, xml_filename)
                                 copyfile(src, dest)
                         else:
                             print("There was a problem in unzipping that archive.")
-                    except Exception as ex:
-                        print("Failed attempt to download file from", download_url, file_entry.filename)
+                    except Exception:
+                        print(
+                            "Failed attempt to download file from",
+                            download_url,
+                            file_entry.filename,
+                        )
 
     def make_folder(self, folder_name):
         try:
             os.mkdir(folder_name)
-        except Exception as e:
+        except Exception:
             pass
 
     def download_files_monthly(self):
@@ -153,13 +157,17 @@ class Downloader(object):
 
                             # Copy to the import folder for running the import
                             src = os.path.join(xml_path, xml_filename)
-                            dest = os.path.join(self.IMPORT_FOLDER, "CDS")
+                            dest = os.path.join(self.import_folder, "CDS")
                             dest = os.path.join(dest, xml_filename)
                             copyfile(src, dest)
                         else:
                             print("There was a problem in unzipping that archive.")
-                    except Exception as ex:
-                        print("Failed attempt to download file from", download_url, file_entry.filename)
+                    except Exception:
+                        print(
+                            "Failed attempt to download file from",
+                            download_url,
+                            file_entry.filename,
+                        )
 
     def download_files_annual(self):
         # Access data
@@ -192,9 +200,9 @@ class Downloader(object):
                 zip_filename = os.path.join(zip_path, filename)
 
                 if os.path.isfile(zip_filename):
-                    print(f'{filename} already exists, skipping...')
+                    print(f"{filename} already exists, skipping...")
                 else:
-                    print(f'Downloading {filename}...')
+                    print(f"Downloading {filename}...")
                     try:
                         urllib.request.urlretrieve(download_url, zip_filename)
                         zfile = zipfile.ZipFile(zip_filename)
@@ -205,10 +213,14 @@ class Downloader(object):
 
                             # Copy to the import folder for running the import
                             src = os.path.join(xml_path, xml_filename)
-                            dest = os.path.join(self.IMPORT_FOLDER, "CDS")
+                            dest = os.path.join(self.import_folder, "CDS")
                             dest = os.path.join(dest, xml_filename)
                             copyfile(src, dest)
                         else:
                             print("There was a problem in unzipping that archive.")
-                    except Exception as ex:
-                        print("Failed attempt to download file from", download_url, file_entry.filename)
+                    except Exception:
+                        print(
+                            "Failed attempt to download file from",
+                            download_url,
+                            file_entry.filename,
+                        )

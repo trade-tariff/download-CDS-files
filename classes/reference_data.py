@@ -1,35 +1,169 @@
-from classes.database import Database
+import os
+import sys
+import requests
+
+from dotenv import load_dotenv
+
+load_dotenv(".env")
+
+
+class ReferenceDataHandler(object):
+    def __init__(self, path, yield_response=False):
+        self._url = os.getenv("OTT_HOST") + path
+        self._headers = {"content-type": "application/json"}
+        self._yield_response = yield_response
+
+    def __enter__(self):
+        try:
+            response_json = requests.request(
+                "GET", self._url, headers=self._headers
+            ).json()
+
+            if self._yield_response:
+                return response_json
+            else:
+                return response_json["data"]
+
+        except Exception:
+            print("Failed to download reference data", self._url)
+            sys.exit()
+
+    def __exit__(self, _a, _b, _c):
+        pass
+
+
+class GeographyList(object):
+    def __init__(self):
+        self.geography_dict = {}
+        self.geography_hjid_dict = {}
+
+    def load(self):
+        with ReferenceDataHandler(
+            "/api/v2/geographical_areas?filter['exclude_none']=true"
+        ) as geographical_areas:
+            for geographical_area in geographical_areas:
+                self.geography_dict[geographical_area["id"]] = geographical_area[
+                    "attributes"
+                ]["description"]
+
+                self.geography_hjid_dict[
+                    geographical_area["attributes"]["hjid"]
+                ] = geographical_area["attributes"]["description"]
 
 
 class MeasureTypeList(object):
     def __init__(self):
         self.measure_type_dict = {}
-        sql = """select mt.measure_type_id, mtd.description
-        from measure_types mt, measure_type_descriptions mtd 
-        where mt.measure_type_id = mtd.measure_type_id 
-        and validity_end_date is null
-        order by 1"""
-        d = Database()
-        rows = d.run_query(sql)
-        for row in rows:
-            self.measure_type_dict[row[0]] = row[1]
+
+    def load(self):
+        with ReferenceDataHandler("/api/v2/measure_types") as measure_types:
+            for measure_type in measure_types:
+                self.measure_type_dict[measure_type["id"]] = measure_type["attributes"][
+                    "description"
+                ]
 
 
 class ActionCodeList(object):
     def __init__(self):
         self.action_code_dict = {}
-        sql = """select action_code, description from measure_action_descriptions mad order by 1"""
-        d = Database()
-        rows = d.run_query(sql)
-        for row in rows:
-            self.action_code_dict[row[0]] = row[1]
+
+    def load(self):
+        with ReferenceDataHandler("/api/v2/measure_actions") as measure_actions:
+            for measure_action in measure_actions:
+                self.action_code_dict[measure_action["id"]] = measure_action[
+                    "attributes"
+                ]["description"]
 
 
 class ConditionCodeList(object):
     def __init__(self):
         self.condition_code_dict = {}
-        sql = """select condition_code, description from measure_condition_code_descriptions mccd order by 1"""
-        d = Database()
-        rows = d.run_query(sql)
-        for row in rows:
-            self.condition_code_dict[row[0]] = row[1]
+
+    def load(self):
+        with ReferenceDataHandler(
+            "/api/v2/measure_condition_codes"
+        ) as measure_condition_codes:
+            for measure_condition_code in measure_condition_codes:
+                self.condition_code_dict[
+                    measure_condition_code["id"]
+                ] = measure_condition_code["attributes"]["description"]
+
+
+class QuotaOrderNumberList(object):
+    def __init__(self):
+        self.quota_order_number_dict = {}
+
+    def load(self):
+        with ReferenceDataHandler(
+            "/api/v2/quota_order_numbers", yield_response=True
+        ) as response:
+            included = response["included"]
+
+            def is_quota_definition(include):
+                return include["type"] == "quota_definition"
+
+            def is_measure(include):
+                return include["type"] == "measure"
+
+            all_quota_definitions = list(filter(is_quota_definition, included))
+            all_measures = list(filter(is_measure, included))
+
+            for quota_definition in all_quota_definitions:
+                quota_definition_commodity_codes = set(())
+                quota_definition_measures = []
+
+                for measure in quota_definition["relationships"]["measures"]["data"]:
+                    quota_definition_measures.append(measure["id"])
+
+                def is_applicable_measure(include):
+                    return include["id"] in quota_definition_measures
+
+                applicable_measures = list(filter(is_applicable_measure, all_measures))
+
+                for measure in applicable_measures:
+                    quota_definition_commodity_codes.add(
+                        measure["attributes"]["goods_nomenclature_item_id"]
+                    )
+
+                if applicable_measures:
+                    self.quota_order_number_dict[
+                        quota_definition["attributes"]["quota_order_number_id"]
+                    ] = sorted(quota_definition_commodity_codes)
+
+
+class MeasurementUnitList(object):
+    def __init__(self):
+        self.measurement_unit_dict = {
+            "ASV": "% vol",
+            "NAR": "item",
+            "CCT": "ct/l",
+            "CEN": "100 p/st",
+            "CTM": "c/k",
+            "DTN": "100 kg",
+            "GFI": "gi F/S",
+            "GRM": "g",
+            "HLT": "hl",
+            "HMT": "100 m",
+            "KGM": "kg",
+            "KLT": "1,000 l",
+            "KMA": "kg met.am.",
+            "KNI": "kg N",
+            "KNS": "kg H2O2",
+            "KPH": "kg KOH",
+            "KPO": "kg K2O",
+            "KPP": "kg P2O5",
+            "KSD": "kg 90 % sdt",
+            "KSH": "kg NaOH",
+            "KUR": "kg U",
+            "LPA": "l alc. 100%",
+            "LTR": "l",
+            "MIL": "1,000 items",
+            "MTK": "m2",
+            "MTQ": "m3",
+            "MTR": "m",
+            "MWH": "1,000 kWh",
+            "NCL": "ce/el",
+            "NPR": "pa",
+            "TJO": "TJ",
+            "TNE": "tonne",
+        }
