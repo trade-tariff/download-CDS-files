@@ -19,6 +19,8 @@ jobs:
   test:
     docker:
       - image: cimg/python:3.10.7
+    environment:
+      SEND_MAIL: 0
     steps:
       - checkout
       - restore_cache:
@@ -43,7 +45,61 @@ jobs:
             python parse.py
             aws s3 sync --exclude ".*" --dryrun --size-only resources/xlsx/ s3://$REPORTING_BUCKET_NAME/changes/uk/
 
+
+  debug:
+    docker:
+      - image: cimg/python:3.10.7
+    environment:
+      SEND_MAIL: 1
+    steps:
+      - checkout
+      - restore_cache:
+          key: deps-1.0.0-{{ checksum "requirements.txt" }}
+      - aws-cli/install
+      - run:
+          name: "Restore data files"
+          command: |
+            aws s3 sync s3://$REPORTING_BUCKET_NAME/changes/uk/ resources/
+      - run:
+          name: "Setup environment"
+          command: |
+            python -m venv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
+      - save_cache:
+          key: deps-1.0.0-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: "Generate files and send email"
+          command: |
+            touch .env
+            source venv/bin/activate
+            export TO_EMAILS=$TO_EMAILS_DEBUG
+            python download.py
+            python parse.py
+      - run:
+          name: "Store data files"
+          command: |
+            aws s3 sync resources/ s3://$REPORTING_BUCKET_NAME/changes/uk/
+
 workflows:
+  debug:
+    triggers:
+      - schedule:
+          cron: "00 8 * * 1,2,3,4,5" # Runs after each ETL job in UK OTT
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - debug:
+          context: trade-tariff
+          filters:
+            branches:
+              only:
+                - main
+
   ci:
     jobs:
       - lint:
@@ -52,6 +108,7 @@ workflows:
               ignore:
                 - main
                 - /^dependabot\/.*/
+                - /^.*debug.*$/
       - test:
           context: trade-tariff
           filters:
@@ -59,3 +116,4 @@ workflows:
               ignore:
                 - main
                 - /^dependabot\/.*/
+                - /^.*debug.*$/
