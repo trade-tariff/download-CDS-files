@@ -33,6 +33,7 @@ jobs:
           key: deps-1.0.0-{{ checksum "requirements.txt" }}
           paths:
             - "venv"
+      - aws-cli/install
       - run:
           name: "Integrate functionality"
           command: |
