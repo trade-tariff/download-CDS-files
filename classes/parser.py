@@ -7,8 +7,8 @@ from .xml_file import XmlFile
 
 class Parser(object):
     def __init__(self):
-        load_dotenv('.env')
-        self.OVERWRITE_XLSX = int(os.getenv('OVERWRITE_XLSX'))
+        load_dotenv(".env")
+        self.OVERWRITE_XLSX = int(os.getenv("OVERWRITE_XLSX"))
         self.path = os.path.join(os.getcwd(), "resources")
         self.xml_path = os.path.join(self.path, "xml")
         self.xlsx_path = os.path.join(self.path, "xlsx")
@@ -34,4 +34,5 @@ class Parser(object):
         filename = filename.replace("xml", "xlsx")
         xlsx_filename = os.path.join(self.xlsx_path, filename)
         exists = os.path.exists(xlsx_filename)
+
         return exists

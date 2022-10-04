@@ -55,8 +55,11 @@ jobs:
       - checkout
       - restore_cache:
           key: deps-1.0.0-{{ checksum "requirements.txt" }}
-      - restore_cache:
-          key: change-files-1.0.0
+      - aws-cli/install
+      - run:
+          name: "Restore data files"
+          command: |
+            aws s3 sync s3://$REPORTING_BUCKET_NAME/changes/uk/ resources/
       - run:
           name: "Setup environment"
           command: |
@@ -67,32 +70,36 @@ jobs:
           key: deps-1.0.0-{{ checksum "requirements.txt" }}
           paths:
             - "venv"
-      - aws-cli/install
       - run:
-          name: "Integrate functionality"
+          name: "Generate files and send email"
           command: |
             touch .env
             source venv/bin/activate
             export TO_EMAILS=$TO_EMAILS_DEBUG
             python download.py
             python parse.py
-            aws s3 sync --dryrun --exclude ".*" --size-only resources/xlsx/ s3://$REPORTING_BUCKET_NAME/changes/uk/
-      - save_cache:
-          key: change-files-1.0.0
-          paths:
-            - "resources/xlxs/"
-            - "resources/zip/"
-            - "resources/xml/"
+      - run:
+          name: "Store data files"
+          command: |
+            aws s3 sync resources/ s3://$REPORTING_BUCKET_NAME/changes/uk/
 
 workflows:
   debug:
+    triggers:
+      - schedule:
+          cron: "00 8 * * 1,2,3,4,5" # Runs after each ETL job in UK OTT
+          filters:
+            branches:
+              only:
+                - main
     jobs:
       - debug:
           context: trade-tariff
           filters:
             branches:
               only:
-                - /^.*debug.*$/
+                - main
+
   ci:
     jobs:
       - lint:
