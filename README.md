@@ -17,7 +17,6 @@
 
 #### Data
 
-- DATABASE_UK=DATABASE CONNECTION STRING (needed for geographical area list)
 - IMPORT_FOLDER=STRING
 - COPY_TO_IMPORT_FOLDER=1 | 0
 - OVERWRITE_XLSX=1 | 0
