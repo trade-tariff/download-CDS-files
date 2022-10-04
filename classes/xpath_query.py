@@ -1,4 +1,3 @@
-import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -14,12 +13,12 @@ class XpathQuery(object):
     def register_namespaces(self):
         if self.scope != "cds":
             self.namespaces = {
-                'oub': 'urn:publicid:-:DGTAXUD:TARIC:MESSAGE:1.0',
-                'env': 'urn:publicid:-:DGTAXUD:GENERAL:ENVELOPE:1.0'
+                "oub": "urn:publicid:-:DGTAXUD:TARIC:MESSAGE:1.0",
+                "env": "urn:publicid:-:DGTAXUD:GENERAL:ENVELOPE:1.0",
             }
         else:
             self.namespaces = {
-                'ns2': 'http://www.eurodyn.com/Tariff/services/DispatchDataExportXMLData/v03'
+                "ns2": "http://www.eurodyn.com/Tariff/services/DispatchDataExportXMLData/v03"
             }
             self.namespaces = {}
         for ns in self.namespaces:
@@ -53,21 +52,41 @@ class XpathQuery(object):
 
     def run_query_commodity_taric(self):
         ret = []
-        self.query = ".//oub:goods.nomenclature[oub:goods.nomenclature.item.id = '{item}']/..".format(item=self.query_id)
+        self.query = ".//oub:goods.nomenclature[oub:goods.nomenclature.item.id = '{item}']/..".format(
+            item=self.query_id
+        )
         for elem in self.root.findall(self.query, self.namespaces):
             transaction_id = self.get_value(elem, "oub:transaction.id")
-            sid = self.get_value(elem, "oub:goods.nomenclature/oub:goods.nomenclature.sid")
-            productline_suffix = self.get_value(elem, "oub:goods.nomenclature/oub:producline.suffix")
-            validity_start_date = self.get_value(elem, "oub:goods.nomenclature/oub:validity.start.date")
-            validity_end_date = self.get_value(elem, "oub:goods.nomenclature/oub:validity.end.date")
+            sid = self.get_value(
+                elem, "oub:goods.nomenclature/oub:goods.nomenclature.sid"
+            )
+            productline_suffix = self.get_value(
+                elem, "oub:goods.nomenclature/oub:producline.suffix"
+            )
+            validity_start_date = self.get_value(
+                elem, "oub:goods.nomenclature/oub:validity.start.date"
+            )
+            validity_end_date = self.get_value(
+                elem, "oub:goods.nomenclature/oub:validity.end.date"
+            )
             filename = Path(self.filename).stem
-            obj = (filename, self.query_id, sid, productline_suffix, transaction_id, validity_start_date, validity_end_date)
+            obj = (
+                filename,
+                self.query_id,
+                sid,
+                productline_suffix,
+                transaction_id,
+                validity_start_date,
+                validity_end_date,
+            )
             ret.append(obj)
         return ret
 
     def run_query_commodity_cds(self):
         ret = []
-        self.query = ".//GoodsNomenclature[goodsNomenclatureItemId = '{item}']".format(item=self.query_id)
+        self.query = ".//GoodsNomenclature[goodsNomenclatureItemId = '{item}']".format(
+            item=self.query_id
+        )
         for elem in self.root.findall(self.query, self.namespaces):
             transaction_id = "n/a"
             sid = self.get_value(elem, "sid")
@@ -75,23 +94,53 @@ class XpathQuery(object):
             validity_start_date = self.get_value(elem, "validityStartDate")
             validity_end_date = self.get_value(elem, "validityEndDate")
             filename = Path(self.filename).stem
-            obj = (filename, self.query_id, sid, productline_suffix, transaction_id, validity_start_date, validity_end_date)
+            obj = (
+                filename,
+                self.query_id,
+                sid,
+                productline_suffix,
+                transaction_id,
+                validity_start_date,
+                validity_end_date,
+            )
             ret.append(obj)
         return ret
 
     def run_query_measure_taric(self):
         ret = []
-        self.query = ".//oub:measure[oub:measure.sid = '{item}']/..".format(item=self.query_id)
+        self.query = ".//oub:measure[oub:measure.sid = '{item}']/..".format(
+            item=self.query_id
+        )
         for elem in self.root.findall(self.query, self.namespaces):
             transaction_id = self.get_value(elem, "oub:transaction.id")
-            goods_nomenclature_sid = self.get_value(elem, "oub:measure/oub:goods.nomenclature.sid")
-            goods_nomenclature_item_id = self.get_value(elem, "oub:measure/oub:goods.nomenclature.item.id")
-            validity_start_date = self.get_value(elem, "oub:measure/oub:validity.start.date")
-            validity_end_date = self.get_value(elem, "oub:measure/oub:validity.end.date")
+            goods_nomenclature_sid = self.get_value(
+                elem, "oub:measure/oub:goods.nomenclature.sid"
+            )
+            goods_nomenclature_item_id = self.get_value(
+                elem, "oub:measure/oub:goods.nomenclature.item.id"
+            )
+            validity_start_date = self.get_value(
+                elem, "oub:measure/oub:validity.start.date"
+            )
+            validity_end_date = self.get_value(
+                elem, "oub:measure/oub:validity.end.date"
+            )
             measure_type_id = self.get_value(elem, "oub:measure/oub:measure.type")
-            geographical_area_id = self.get_value(elem, "oub:measure/oub:geographical.area")
+            geographical_area_id = self.get_value(
+                elem, "oub:measure/oub:geographical.area"
+            )
             filename = Path(self.filename).stem
-            obj = (filename, self.query_id, transaction_id, goods_nomenclature_item_id, validity_start_date, validity_end_date, measure_type_id, geographical_area_id, goods_nomenclature_sid)
+            obj = (
+                filename,
+                self.query_id,
+                transaction_id,
+                goods_nomenclature_item_id,
+                validity_start_date,
+                validity_end_date,
+                measure_type_id,
+                geographical_area_id,
+                goods_nomenclature_sid,
+            )
             ret.append(obj)
         return ret
 
@@ -101,99 +150,212 @@ class XpathQuery(object):
         for elem in self.root.findall(self.query, self.namespaces):
             transaction_id = "n/a"
             goods_nomenclature_sid = self.get_value(elem, "goodsNomenclature/sid")
-            goods_nomenclature_item_id = self.get_value(elem, "goodsNomenclature/goodsNomenclatureItemId")
+            goods_nomenclature_item_id = self.get_value(
+                elem, "goodsNomenclature/goodsNomenclatureItemId"
+            )
             validity_start_date = self.get_value(elem, "validityStartDate")
             validity_end_date = self.get_value(elem, "validityEndDate")
             measure_type_id = self.get_value(elem, "measureType/measureTypeId")
-            geographical_area_id = self.get_value(elem, "geographicalArea/geographicalAreaId")
+            geographical_area_id = self.get_value(
+                elem, "geographicalArea/geographicalAreaId"
+            )
             filename = Path(self.filename).stem
-            obj = (filename, self.query_id, transaction_id, goods_nomenclature_item_id, validity_start_date, validity_end_date, measure_type_id, geographical_area_id, goods_nomenclature_sid)
+            obj = (
+                filename,
+                self.query_id,
+                transaction_id,
+                goods_nomenclature_item_id,
+                validity_start_date,
+                validity_end_date,
+                measure_type_id,
+                geographical_area_id,
+                goods_nomenclature_sid,
+            )
             ret.append(obj)
         return ret
 
     def run_query_measure_type_taric(self):
         ret = []
-        self.query = ".//oub:measure[oub:measure.type = '{item}']/..".format(item=self.query_id)
+        self.query = ".//oub:measure[oub:measure.type = '{item}']/..".format(
+            item=self.query_id
+        )
         for elem in self.root.findall(self.query, self.namespaces):
             transaction_id = self.get_value(elem, "oub:transaction.id")
             measure_sid = self.get_value(elem, "oub:measure.sid")
-            goods_nomenclature_sid = self.get_value(elem, "oub:measure/oub:goods.nomenclature.sid")
-            goods_nomenclature_item_id = self.get_value(elem, "oub:measure/oub:goods.nomenclature.item.id")
-            validity_start_date = self.get_value(elem, "oub:measure/oub:validity.start.date")
-            validity_end_date = self.get_value(elem, "oub:measure/oub:validity.end.date")
+            goods_nomenclature_sid = self.get_value(
+                elem, "oub:measure/oub:goods.nomenclature.sid"
+            )
+            goods_nomenclature_item_id = self.get_value(
+                elem, "oub:measure/oub:goods.nomenclature.item.id"
+            )
+            validity_start_date = self.get_value(
+                elem, "oub:measure/oub:validity.start.date"
+            )
+            validity_end_date = self.get_value(
+                elem, "oub:measure/oub:validity.end.date"
+            )
             measure_type_id = self.get_value(elem, "oub:measure/oub:measure.type")
-            geographical_area_id = self.get_value(elem, "oub:measure/oub:geographical.area")
+            geographical_area_id = self.get_value(
+                elem, "oub:measure/oub:geographical.area"
+            )
             filename = Path(self.filename).stem
-            obj = (filename, self.query_id, transaction_id, measure_sid, goods_nomenclature_item_id, validity_start_date, validity_end_date, measure_type_id, geographical_area_id, goods_nomenclature_sid)
+            obj = (
+                filename,
+                self.query_id,
+                transaction_id,
+                measure_sid,
+                goods_nomenclature_item_id,
+                validity_start_date,
+                validity_end_date,
+                measure_type_id,
+                geographical_area_id,
+                goods_nomenclature_sid,
+            )
             ret.append(obj)
         return ret
 
     def run_query_measure_type_cds(self):
         ret = []
-        self.query = ".//Measure/measureType/[measureTypeId = '{item}']/..".format(item=self.query_id)
+        self.query = ".//Measure/measureType/[measureTypeId = '{item}']/..".format(
+            item=self.query_id
+        )
         for elem in self.root.findall(self.query, self.namespaces):
             transaction_id = "n/a"
             measure_sid = self.get_value(elem, "sid")
             goods_nomenclature_sid = self.get_value(elem, "goodsNomenclature/sid")
-            goods_nomenclature_item_id = self.get_value(elem, "goodsNomenclature/goodsNomenclatureItemId")
+            goods_nomenclature_item_id = self.get_value(
+                elem, "goodsNomenclature/goodsNomenclatureItemId"
+            )
             validity_start_date = self.get_value(elem, "validityStartDate")
             validity_end_date = self.get_value(elem, "validityEndDate")
             measure_type_id = self.get_value(elem, "measureType/measureTypeId")
-            geographical_area_id = self.get_value(elem, "geographicalArea/geographicalAreaId")
+            geographical_area_id = self.get_value(
+                elem, "geographicalArea/geographicalAreaId"
+            )
 
             filename = Path(self.filename).stem
-            obj = (filename, self.query_id, transaction_id, measure_sid, goods_nomenclature_item_id, validity_start_date, validity_end_date, measure_type_id, geographical_area_id, goods_nomenclature_sid)
+            obj = (
+                filename,
+                self.query_id,
+                transaction_id,
+                measure_sid,
+                goods_nomenclature_item_id,
+                validity_start_date,
+                validity_end_date,
+                measure_type_id,
+                geographical_area_id,
+                goods_nomenclature_sid,
+            )
             ret.append(obj)
         return ret
 
     def run_query_geographical_area_taric(self):
         ret = []
-        self.query = ".//oub:measure[oub:geographical.area = '{item}']/..".format(item=self.query_id)
+        self.query = ".//oub:measure[oub:geographical.area = '{item}']/..".format(
+            item=self.query_id
+        )
         for elem in self.root.findall(self.query, self.namespaces):
             transaction_id = self.get_value(elem, "oub:transaction.id")
             measure_sid = self.get_value(elem, "oub:measure.sid")
-            goods_nomenclature_sid = self.get_value(elem, "oub:measure/oub:goods.nomenclature.sid")
-            goods_nomenclature_item_id = self.get_value(elem, "oub:measure/oub:goods.nomenclature.item.id")
-            validity_start_date = self.get_value(elem, "oub:measure/oub:validity.start.date")
-            validity_end_date = self.get_value(elem, "oub:measure/oub:validity.end.date")
+            goods_nomenclature_sid = self.get_value(
+                elem, "oub:measure/oub:goods.nomenclature.sid"
+            )
+            goods_nomenclature_item_id = self.get_value(
+                elem, "oub:measure/oub:goods.nomenclature.item.id"
+            )
+            validity_start_date = self.get_value(
+                elem, "oub:measure/oub:validity.start.date"
+            )
+            validity_end_date = self.get_value(
+                elem, "oub:measure/oub:validity.end.date"
+            )
             measure_type_id = self.get_value(elem, "oub:measure/oub:measure.type")
-            geographical_area_id = self.get_value(elem, "oub:measure/oub:geographical.area")
+            geographical_area_id = self.get_value(
+                elem, "oub:measure/oub:geographical.area"
+            )
             filename = Path(self.filename).stem
-            obj = (filename, self.query_id, transaction_id, measure_sid, goods_nomenclature_item_id, validity_start_date, validity_end_date, measure_type_id, geographical_area_id, goods_nomenclature_sid)
+            obj = (
+                filename,
+                self.query_id,
+                transaction_id,
+                measure_sid,
+                goods_nomenclature_item_id,
+                validity_start_date,
+                validity_end_date,
+                measure_type_id,
+                geographical_area_id,
+                goods_nomenclature_sid,
+            )
             ret.append(obj)
         return ret
 
     def run_query_geographical_area_cds(self):
         ret = []
-        self.query = ".//Measure/geographicalArea[geographicalAreaId = '{item}']/..".format(item=self.query_id)
+        self.query = (
+            ".//Measure/geographicalArea[geographicalAreaId = '{item}']/..".format(
+                item=self.query_id
+            )
+        )
         for elem in self.root.findall(self.query, self.namespaces):
             transaction_id = "n/a"
             measure_sid = self.get_value(elem, "sid")
             goods_nomenclature_sid = self.get_value(elem, "goodsNomenclature/sid")
-            goods_nomenclature_item_id = self.get_value(elem, "goodsNomenclature/goodsNomenclatureItemId")
+            goods_nomenclature_item_id = self.get_value(
+                elem, "goodsNomenclature/goodsNomenclatureItemId"
+            )
             validity_start_date = self.get_value(elem, "validityStartDate")
             validity_end_date = self.get_value(elem, "validityEndDate")
             measure_type_id = self.get_value(elem, "measureType/measureTypeId")
-            geographical_area_id = self.get_value(elem, "geographicalArea/geographicalAreaId")
+            geographical_area_id = self.get_value(
+                elem, "geographicalArea/geographicalAreaId"
+            )
             filename = Path(self.filename).stem
-            obj = (filename, self.query_id, transaction_id, measure_sid, goods_nomenclature_item_id, validity_start_date, validity_end_date, measure_type_id, geographical_area_id, goods_nomenclature_sid)
+            obj = (
+                filename,
+                self.query_id,
+                transaction_id,
+                measure_sid,
+                goods_nomenclature_item_id,
+                validity_start_date,
+                validity_end_date,
+                measure_type_id,
+                geographical_area_id,
+                goods_nomenclature_sid,
+            )
             ret.append(obj)
         return ret
 
     def run_query_commodity_measure_cds(self):
         ret = []
-        self.query = ".//Measure/goodsNomenclature[goodsNomenclatureItemId = '{item}']/..".format(item=self.query_id)
+        self.query = ".//Measure/goodsNomenclature[goodsNomenclatureItemId = '{item}']/..".format(
+            item=self.query_id
+        )
         for elem in self.root.findall(self.query, self.namespaces):
             transaction_id = "n/a"
             measure_sid = self.get_value(elem, "sid")
             goods_nomenclature_sid = self.get_value(elem, "goodsNomenclature/sid")
-            goods_nomenclature_item_id = self.get_value(elem, "goodsNomenclature/goodsNomenclatureItemId")
+            goods_nomenclature_item_id = self.get_value(
+                elem, "goodsNomenclature/goodsNomenclatureItemId"
+            )
             validity_start_date = self.get_value(elem, "validityStartDate")
             validity_end_date = self.get_value(elem, "validityEndDate")
             measure_type_id = self.get_value(elem, "measureType/measureTypeId")
-            geographical_area_id = self.get_value(elem, "geographicalArea/geographicalAreaId")
+            geographical_area_id = self.get_value(
+                elem, "geographicalArea/geographicalAreaId"
+            )
             filename = Path(self.filename).stem
-            obj = (filename, self.query_id, transaction_id, measure_sid, goods_nomenclature_item_id, validity_start_date, validity_end_date, measure_type_id, geographical_area_id, goods_nomenclature_sid)
+            obj = (
+                filename,
+                self.query_id,
+                transaction_id,
+                measure_sid,
+                goods_nomenclature_item_id,
+                validity_start_date,
+                validity_end_date,
+                measure_type_id,
+                geographical_area_id,
+                goods_nomenclature_sid,
+            )
             ret.append(obj)
         return ret
 

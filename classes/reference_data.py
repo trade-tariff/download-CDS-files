@@ -129,3 +129,41 @@ class QuotaOrderNumberList(object):
                     self.quota_order_number_dict[
                         quota_definition["attributes"]["quota_order_number_id"]
                     ] = sorted(quota_definition_commodity_codes)
+
+
+class MeasurementUnitList(object):
+    def __init__(self):
+        self.measurement_unit_dict = {
+            "ASV": "% vol",
+            "NAR": "item",
+            "CCT": "ct/l",
+            "CEN": "100 p/st",
+            "CTM": "c/k",
+            "DTN": "100 kg",
+            "GFI": "gi F/S",
+            "GRM": "g",
+            "HLT": "hl",
+            "HMT": "100 m",
+            "KGM": "kg",
+            "KLT": "1,000 l",
+            "KMA": "kg met.am.",
+            "KNI": "kg N",
+            "KNS": "kg H2O2",
+            "KPH": "kg KOH",
+            "KPO": "kg K2O",
+            "KPP": "kg P2O5",
+            "KSD": "kg 90 % sdt",
+            "KSH": "kg NaOH",
+            "KUR": "kg U",
+            "LPA": "l alc. 100%",
+            "LTR": "l",
+            "MIL": "1,000 items",
+            "MTK": "m2",
+            "MTQ": "m3",
+            "MTR": "m",
+            "MWH": "1,000 kWh",
+            "NCL": "ce/el",
+            "NPR": "pa",
+            "TJO": "TJ",
+            "TNE": "tonne",
+        }

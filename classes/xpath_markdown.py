@@ -1,6 +1,4 @@
 import os
-import xml.etree.ElementTree as ET
-from pathlib import Path
 
 
 class XpathMarkdown(object):
@@ -30,8 +28,12 @@ class XpathMarkdown(object):
         self.commodities_folder = os.path.join(parent_folder, "commodities")
         self.measures_folder = os.path.join(parent_folder, "measures")
         self.measure_types_folder = os.path.join(parent_folder, "measure_types")
-        self.geographical_areas_folder = os.path.join(parent_folder, "geographical_areas")
-        self.commodity_measures_folder = os.path.join(parent_folder, "commodity_measures")
+        self.geographical_areas_folder = os.path.join(
+            parent_folder, "geographical_areas"
+        )
+        self.commodity_measures_folder = os.path.join(
+            parent_folder, "commodity_measures"
+        )
 
         self.make_folder(queries_folder)
         self.make_folder(dit_folder)
@@ -47,7 +49,7 @@ class XpathMarkdown(object):
     def make_folder(self, folder):
         try:
             os.mkdir(folder)
-        except Exception as e:
+        except Exception:
             pass
 
     def get_filename(self):
@@ -77,7 +79,9 @@ class XpathMarkdown(object):
 
     def write_markdown_commodity(self):
         self.get_unique_filenames()
-        self.markdown += "# Instances of commodity code {item}\n\n".format(item=self.query_id)
+        self.markdown += "# Instances of commodity code {item}\n\n".format(
+            item=self.query_id
+        )
         self.markdown += "## Files containing item\n\n"
         for filename in self.unique_filenames:
             self.markdown += "- {item}\n".format(item=filename)
@@ -98,7 +102,9 @@ class XpathMarkdown(object):
 
     def write_markdown_measure(self):
         self.get_unique_filenames()
-        self.markdown += "# Instances of measure SID {item}\n\n".format(item=self.query_id)
+        self.markdown += "# Instances of measure SID {item}\n\n".format(
+            item=self.query_id
+        )
         self.markdown += "## Files containing item\n\n"
         for filename in self.unique_filenames:
             self.markdown += "- {item}\n".format(item=filename)
@@ -112,7 +118,9 @@ class XpathMarkdown(object):
             self.markdown += "- End date = {item}\n".format(item=record[5])
             self.markdown += "- Measure type ID = {item}\n".format(item=record[6])
             self.markdown += "- Geographical area ID = {item}\n".format(item=record[7])
-            self.markdown += "- Goods nomenclature SID = {item}\n\n".format(item=record[8])
+            self.markdown += "- Goods nomenclature SID = {item}\n\n".format(
+                item=record[8]
+            )
 
         f = open(self.filepath, "w")
         f.write(self.markdown)
@@ -120,7 +128,9 @@ class XpathMarkdown(object):
 
     def write_markdown_measure_type(self):
         self.get_unique_filenames()
-        self.markdown += "# Instances of measure type {item}\n\n".format(item=self.query_id)
+        self.markdown += "# Instances of measure type {item}\n\n".format(
+            item=self.query_id
+        )
         self.markdown += "## Files containing item\n\n"
         for filename in self.unique_filenames:
             self.markdown += "- {item}\n".format(item=filename)
@@ -135,7 +145,9 @@ class XpathMarkdown(object):
             self.markdown += "- End date = {item}\n".format(item=record[5])
             self.markdown += "- Measure type ID = {item}\n".format(item=record[6])
             self.markdown += "- Geographical area ID = {item}\n".format(item=record[7])
-            self.markdown += "- Goods nomenclature SID = {item}\n\n".format(item=record[8])
+            self.markdown += "- Goods nomenclature SID = {item}\n\n".format(
+                item=record[8]
+            )
 
         f = open(self.filepath, "w")
         f.write(self.markdown)
@@ -143,7 +155,11 @@ class XpathMarkdown(object):
 
     def write_markdown_geographical_area(self):
         self.get_unique_filenames()
-        self.markdown += "# Instances of measures applied to geographical area {item}\n\n".format(item=self.query_id)
+        self.markdown += (
+            "# Instances of measures applied to geographical area {item}\n\n".format(
+                item=self.query_id
+            )
+        )
         self.markdown += "## Files containing item\n\n"
         for filename in self.unique_filenames:
             self.markdown += "- {item}\n".format(item=filename)
@@ -158,7 +174,9 @@ class XpathMarkdown(object):
             self.markdown += "- End date = {item}\n".format(item=record[5])
             self.markdown += "- Measure type ID = {item}\n".format(item=record[6])
             self.markdown += "- Geographical area ID = {item}\n".format(item=record[7])
-            self.markdown += "- Goods nomenclature SID = {item}\n\n".format(item=record[8])
+            self.markdown += "- Goods nomenclature SID = {item}\n\n".format(
+                item=record[8]
+            )
 
         f = open(self.filepath, "w")
         f.write(self.markdown)
@@ -166,7 +184,11 @@ class XpathMarkdown(object):
 
     def write_markdown_commodity_measure(self):
         self.get_unique_filenames()
-        self.markdown += "# Instances of measures applied to commodity code {item}\n\n".format(item=self.query_id)
+        self.markdown += (
+            "# Instances of measures applied to commodity code {item}\n\n".format(
+                item=self.query_id
+            )
+        )
         self.markdown += "## Files containing item\n\n"
         for filename in self.unique_filenames:
             self.markdown += "- {item}\n".format(item=filename)
@@ -181,7 +203,9 @@ class XpathMarkdown(object):
             self.markdown += "- End date = {item}\n".format(item=record[5])
             self.markdown += "- Measure type ID = {item}\n".format(item=record[6])
             self.markdown += "- Geographical area ID = {item}\n".format(item=record[7])
-            self.markdown += "- Goods nomenclature SID = {item}\n\n".format(item=record[8])
+            self.markdown += "- Goods nomenclature SID = {item}\n\n".format(
+                item=record[8]
+            )
 
         f = open(self.filepath, "w")
         f.write(self.markdown)

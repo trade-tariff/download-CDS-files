@@ -5,12 +5,11 @@ class Master(object):
     def __init__(self, elem):
         try:
             self.operation = elem.find("metainfo/opType").text
-        except Exception as e:
+        except Exception:
             self.operation = ""
         try:
-            self.national = 1 if elem.find(
-                "metainfo/origin").text == "N" else 0
-        except Exception as e:
+            self.national = 1 if elem.find("metainfo/origin").text == "N" else 0
+        except Exception:
             self.national = 0
 
         self.expand_operation()
