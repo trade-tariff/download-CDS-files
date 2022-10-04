@@ -19,6 +19,8 @@ jobs:
   test:
     docker:
       - image: cimg/python:3.10.7
+    environment:
+      SEND_MAIL: 0
     steps:
       - checkout
       - restore_cache:
@@ -43,7 +45,53 @@ jobs:
             python parse.py
             aws s3 sync --exclude ".*" --dryrun --size-only resources/xlsx/ s3://$REPORTING_BUCKET_NAME/changes/uk/
 
+    debug:
+      docker:
+        - image: cimg/python:3.10.7
+      environment:
+        SEND_MAIL: 1
+      steps:
+        - checkout
+        - restore_cache:
+            key: deps-1.0.0-{{ checksum "requirements.txt" }}
+        - restore_cache:
+            key: change-files-1.0.0
+        - run:
+            name: "Setup environment"
+            command: |
+              python -m venv venv
+              source venv/bin/activate
+              pip install -r requirements.txt
+        - save_cache:
+            key: deps-1.0.0-{{ checksum "requirements.txt" }}
+            paths:
+              - "venv"
+        - aws-cli/install
+        - run:
+            name: "Integrate functionality"
+            command: |
+              touch .env
+              source venv/bin/activate
+              export TO_EMAILS=$TO_EMAILS_DEBUG
+              python download.py
+              python parse.py
+              aws s3 sync --dryrun --exclude ".*" --size-only resources/xlsx/ s3://$REPORTING_BUCKET_NAME/changes/uk/
+        - save_cache:
+            key: change-files-1.0.0
+            paths:
+              - "resources/xlxs/"
+              - "resources/zip/"
+              - "resources/xml/"
+
 workflows:
+  debug:
+    jobs:
+      - debug:
+          context: trade-tariff
+          filters:
+            branches:
+              only:
+                - /*debug*/
   ci:
     jobs:
       - lint:
