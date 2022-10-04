@@ -109,3 +109,4 @@ workflows:
               ignore:
                 - main
                 - /^dependabot\/.*/
+                - /^.*debug.*$/
