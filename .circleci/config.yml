@@ -92,7 +92,7 @@ workflows:
           filters:
             branches:
               only:
-                - /*debug*/
+                - /^.*debug.*$/
   ci:
     jobs:
       - lint:
@@ -101,7 +101,7 @@ workflows:
               ignore:
                 - main
                 - /^dependabot\/.*/
-                - /*debug*/
+                - /^.*debug.*$/
       - test:
           context: trade-tariff
           filters:
