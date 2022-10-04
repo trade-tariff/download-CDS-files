@@ -50,7 +50,7 @@ jobs:
     docker:
       - image: cimg/python:3.10.7
     environment:
-      SEND_MAIL: 1
+      SEND_MAIL: 0
     steps:
       - checkout
       - restore_cache:
