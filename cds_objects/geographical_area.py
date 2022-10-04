@@ -1,6 +1,4 @@
-import sys
 from classes.master import Master
-from classes.database import Database
 import classes.globals as g
 from cds_objects.geographical_area_description import GeographicalAreaDescription
 from cds_objects.geographical_area_membership import GeographicalAreaMembership
