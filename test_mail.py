@@ -1,6 +1,7 @@
 import ssl
 from classes.sendgrid_mailer import SendgridMailer
 
+print("hello")
 
 ssl._create_default_https_context = ssl._create_unverified_context
 html_content = """
@@ -11,8 +12,6 @@ html_content = """
 """
 filename = "resources/xlsx/CDS updates 2021-01-01.xlsx"
 subject = "CDS data load test"
-attachment_list = [
-    filename
-]
+attachment_list = [filename]
 s = SendgridMailer(subject, html_content, attachment_list)
 s.send()
