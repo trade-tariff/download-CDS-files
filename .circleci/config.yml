@@ -107,13 +107,9 @@ workflows:
             branches:
               ignore:
                 - main
-                - /^dependabot\/.*/
-                - /^.*debug.*$/
       - test:
           context: trade-tariff
           filters:
             branches:
               ignore:
                 - main
-                - /^dependabot\/.*/
-                - /^.*debug.*$/
