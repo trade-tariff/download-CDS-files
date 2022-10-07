@@ -11,6 +11,7 @@ class Excel(object):
         self.path = path
         self.filename = filename
         self.excel_filename = f.xml_to_xlsx_filename(self.filename)
+        self.file_date = f.xml_to_file_date(self.filename)
 
         self.excel_path = self.path.replace("xml", "xlsx")
         self.excel_filename = os.path.join(self.excel_path, self.excel_filename)
