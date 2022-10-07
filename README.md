@@ -1,55 +1,34 @@
-# Download and parse files from the CDS download service
+# download-CDS-files
 
-## Implementation
+This project downloads files containing tariff information and extracts them
+into a human-readable XLSX format.
 
-### Create and activate a virtual environment, e.g.
+These files are subsequently emailed to various stakeholders as part of a service run
+by the Online Trade Tariff team.
 
-- `python3 -m venv venv/`
-- `source venv/bin/activate`
+## Getting started for local development
 
-### Environment variable settings
+```bash
+python -m venv venv # Build an isolated python dev environment
+source venv/bin/activate # Activate the enviornment
+pip install -r requirements_dev.txt # Install dependencies into the environment
+cp .env.example .env # Copy the example .env file to configure the project
+```
 
-#### Connectivity to CDS download server
+Once you've copied the example configuration file, you'll want help from the team to populate the secrets
+in your local copy of the .env file.
 
-- DOMAIN=root domain from which to download GZIP files
-- CLIENT_SECRET=STRING
-- CLIENT_ID=STRING
+Please make sure you **never upload secrets to github**.
 
-#### Data
+You should then be able to download the CDS files and email parsed changes like so:
 
-- IMPORT_FOLDER=STRING
-- COPY_TO_IMPORT_FOLDER=1 | 0
-- OVERWRITE_XLSX=1 | 0
+```bash
+python download.py
+python parse.py
+```
 
-#### Send grid mail API
+## Prerequisites
 
-- SENDGRID_API_KEY=STRING
-- FROM_EMAIL=in the form EMAIL ADDRESS | NAME
-
-  e.g. test@test.com|Geoff Test
-
-- TO_EMAILS=List of email addresses: comma-separated in the form EMAIL ADDRESS | FIRST_NAME | LAST_NAME
-
-  e.g. test@test.com|Geoff|Test,test2@test.com|Mary|Test
-
-- SEND_MAIL=1 | 0
-
-### Install packages
-
-- Install necessary Python modules via `pip3 install -r requirements.txt`
-
-## Usage
-
-### To download CDS extract files:
-
-- `python3 download.py`
-- `python3 download_monthly.py`
-- `python3 download_annual.py`
-
-### To parse CDS extract files into Excel:
-
-`python3 parse.py`
-
-### To run all three of the steps above:
-
-`python3 run.py`
+- python (specific version is defined in .tool-versions)
+- aws access (speak to a team member)
+- secrets for interfacing with the cds api (speak to a team member)
