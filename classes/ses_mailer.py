@@ -18,7 +18,8 @@ class SesMailer(object):
     def build_for_test():
         return SesMailer("Testing", "<p>Hello, World</p>", ["test.csv"])
 
-    def build_for_cds_upload(edition):
+    def build_for_cds_upload():
+        edition = g.excel.file_date
         subject = SesMailer.SUBJECT.format(edition=edition)
         content = SesMailer.EMAIL_CONTENT.format(edition=edition)
 
@@ -48,14 +49,16 @@ class SesMailer(object):
 
         return self._client.send_raw_email(
             Source=self._from_email,
-            Destinations=self._to_emails,
+            Destinations=self._to_emails.split(","),
             RawMessage={"Data": message.as_string()},
         )
 
     def create_attachment(self, filename):
         with open(filename, "rb") as attachment:
             part = MIMEApplication(attachment.read())
-            part.add_header("Content-Disposition", "attachment", filename=filename)
+            part.add_header(
+                "Content-Disposition", "attachment", filename=os.path.basename(filename)
+            )
 
             return part
 
