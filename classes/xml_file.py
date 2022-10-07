@@ -2,7 +2,7 @@ import os
 import json
 import xml.etree.ElementTree as ET
 import classes.globals as g
-from classes.sendgrid_mailer import SendgridMailer
+from classes.ses_mailer import SesMailer
 
 import classes.functions as func
 from cds_objects.footnote_type import FootnoteType
@@ -54,13 +54,8 @@ class XmlFile(object):
         self.mail_extract()
 
     def mail_extract(self):
-        edition = self.execution_date.split("T")[0]
-        html_content = open("resources/email_template.html", "r").read()
-        formatted_html_content = html_content.format(edition=edition)
-
-        subject = "CDS data load " + edition
-        s = SendgridMailer(subject, formatted_html_content, [g.excel.excel_filename])
-        s.send()
+        if int(os.getenv("SEND_MAIL")) == 1:
+            SesMailer.build_for_cds_upload().send()
 
     def write_changes(self):
         self.json_path = self.path.replace("xml", "json")

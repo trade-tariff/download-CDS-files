@@ -4,11 +4,14 @@ def parse_date(d):
 
 
 def xml_to_xlsx_filename(filename):
-    parts = filename.split("T")
-    part0 = parts[0]
-    parts = part0.split("-")
-    part1 = parts[1]
-    excel_filename = (
-        "CDS updates " + part1[0:4] + "-" + part1[4:6] + "-" + part1[6:] + ".xlsx"
-    )
-    return excel_filename
+    return "CDS updates " + xml_to_file_date(filename) + ".xlsx"
+
+
+def xml_to_file_date(filename):
+    xml_date_part = filename.split("T")[0].split("-")[1]
+
+    year = xml_date_part[0:4]
+    month = xml_date_part[4:6]
+    day = xml_date_part[6:]
+
+    return year + "-" + month + "-" + day
