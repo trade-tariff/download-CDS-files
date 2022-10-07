@@ -54,7 +54,8 @@ class XmlFile(object):
         self.mail_extract()
 
     def mail_extract(self):
-        SesMailer.build_for_cds_upload().send()
+        if int(os.getenv("SEND_MAIL")) == 1:
+            SesMailer.build_for_cds_upload().send()
 
     def write_changes(self):
         self.json_path = self.path.replace("xml", "json")
