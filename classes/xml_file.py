@@ -27,7 +27,7 @@ class XmlFile(object):
         # Create the Excel
         g.excel = Excel()
         g.excel.create_excel(self.path, self.filename)
-        print("Creating file", g.excel.excel_filename)
+        print("Creating file", os.path.basename(g.excel.excel_filename))
 
         tree = ET.parse(self.file_path)
         self.root = tree.getroot()
@@ -47,7 +47,7 @@ class XmlFile(object):
 
         g.excel.close_excel()
 
-        # self.mail_extract()
+        self.mail_extract()
 
     def mail_extract(self):
         if self.should_send_mail():
