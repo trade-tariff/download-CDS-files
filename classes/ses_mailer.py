@@ -32,14 +32,6 @@ class SesMailer(object):
         self._to_emails = os.getenv("TO_EMAILS", default="")
         self._from_email = os.getenv("FROM_EMAIL", default="")
         self._content = content
-        print("DEBUG MAILER START")
-        print(self._subject)
-        print(self._attachments)
-        print(self._client)
-        print(self._to_emails)
-        print(self._from_email)
-        print(self._content)
-        print("DEBUG MAILER END")
 
     def send(self):
         message = MIMEMultipart()
