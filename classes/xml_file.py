@@ -3,7 +3,6 @@ import xml.etree.ElementTree as ET
 import classes.globals as g
 from classes.ses_mailer import SesMailer
 
-import classes.functions as func
 from cds_objects.footnote_type import FootnoteType
 from cds_objects.footnote import Footnote
 from cds_objects.additional_code import AdditionalCode
@@ -442,8 +441,8 @@ class XmlFile(object):
 
     def get_results_info(self):
         results_info = self.root.find("ResultsInfo")
-        self.total_records = results_info.find("totalRecords").text
+        self.total_records = int(results_info.find("totalRecords").text)
         self.execution_date = results_info.find("executionDate").text
 
     def should_send_mail(self):
-        return int(os.getenv("SEND_MAIL", "0")) == 1 and self.total_rows > 0
+        return int(os.getenv("SEND_MAIL", "0")) == 1 and self.total_records > 0
