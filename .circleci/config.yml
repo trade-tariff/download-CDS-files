@@ -106,7 +106,7 @@ workflows:
             branches:
               ignore:
                 - main
-      - debug:
+      - test:
           context: trade-tariff
           filters:
             branches:
