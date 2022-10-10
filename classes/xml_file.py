@@ -1,5 +1,4 @@
 import os
-import json
 import xml.etree.ElementTree as ET
 import classes.globals as g
 from classes.ses_mailer import SesMailer
@@ -49,54 +48,11 @@ class XmlFile(object):
 
         g.excel.close_excel()
 
-        self.write_changes()
-
         self.mail_extract()
 
     def mail_extract(self):
-        if int(os.getenv("SEND_MAIL")) == 1:
+        if int(os.getenv("SEND_MAIL", "0")) == 1:
             SesMailer.build_for_cds_upload().send()
-
-    def write_changes(self):
-        self.json_path = self.path.replace("xml", "json")
-        temp = self.filename.split("T")[0] + ".json"
-        self.json_filename = temp
-        self.json_filename = os.path.join(self.json_path, self.json_filename)
-
-        my_dict = {}
-        consolidated_commodities = []
-        measures = []
-        commodities = []
-        quota_definitions = []
-        summary = {}
-        summary["execution_date"] = self.execution_date
-        summary["change_count"] = str(len(g.change_list))
-        for change in g.change_list:
-            if change.object_type == "Measure":
-                measures.append(change.__dict__)
-                consolidated_commodities += change.impacted_end_lines
-
-            elif change.object_type == "Commodity":
-                commodities.append(change.__dict__)
-                consolidated_commodities += change.impacted_end_lines
-
-            elif change.object_type == "Quota definition":
-                quota_definitions.append(change.__dict__)
-                consolidated_commodities += change.impacted_end_lines
-
-        consolidated_commodities = list(set(consolidated_commodities))
-        consolidated_commodities.sort()
-
-        my_dict["summary"] = summary
-        my_dict["updated_commodity_codes"] = consolidated_commodities
-        my_dict["commodity_changes"] = commodities
-        my_dict["measure_changes"] = measures
-        my_dict["quota_definition_changes"] = quota_definitions
-
-        f = open(self.json_filename, "w+")
-        my_string = json.dumps(my_dict, indent=2, sort_keys=False)
-        f.write(my_string)
-        f.close()
 
     def get_footnote_types(self):
         row_count = 0

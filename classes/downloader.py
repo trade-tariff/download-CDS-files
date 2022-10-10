@@ -8,19 +8,17 @@ from shutil import copyfile
 from classes.cds_file import CdsFile
 import urllib.request
 
+load_dotenv(".env")
+
 
 class Downloader(object):
     def __init__(self):
         # Get credentials
-        load_dotenv(".env")
-        self.domain = os.getenv("GOVUK_API_DOMAIN")
-        self.client_id = os.getenv("CLIENT_ID")
-        self.client_secret = os.getenv("CLIENT_SECRET")
-        self.import_folder = os.getenv("IMPORT_FOLDER")
-        try:
-            self.COPY_TO_IMPORT_FOLDER = int(os.getenv("COPY_TO_IMPORT_FOLDER"))
-        except Exception:
-            self.COPY_TO_IMPORT_FOLDER = 0
+        self.domain = os.getenv("GOVUK_API_DOMAIN", "")
+        self.client_id = os.getenv("CLIENT_ID", "")
+        self.client_secret = os.getenv("CLIENT_SECRET", "")
+        self.import_folder = os.getenv("IMPORT_FOLDER", "")
+        self._copy_to_import_folder = int(os.getenv("COPY_TO_IMPORT_FOLDER", "0"))
         self.cds_files = []
 
         self.get_access_token()
@@ -60,7 +58,6 @@ class Downloader(object):
             cds_file.filename = file_entry["filename"]
             cds_file.download_url = file_entry["downloadURL"]
             self.cds_files.append(cds_file)
-            print(file_entry["filename"])
 
         # sys.exit()
         self.cds_files = sorted(self.cds_files, key=lambda x: x.filename, reverse=True)
@@ -89,11 +86,11 @@ class Downloader(object):
                         zfile = zipfile.ZipFile(zip_filename)
                         zfile.extractall(xml_path)
                         unzipped_files = zfile.filelist
-                        # __import__("pdb").set_trace()
+
                         if unzipped_files:
                             xml_filename = unzipped_files[0].filename
 
-                            if self.COPY_TO_IMPORT_FOLDER == 1:
+                            if self._copy_to_import_folder == 1:
                                 # Copy to the import folder for running the import
                                 src = os.path.join(xml_path, xml_filename)
                                 dest = os.path.join(self.import_folder, "CDS")

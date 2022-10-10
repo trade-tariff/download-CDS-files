@@ -29,9 +29,17 @@ class SesMailer(object):
         self._subject = subject
         self._attachments = attachments
         self._client = boto3.client("ses", region_name=os.getenv("AWS_REGION"))
-        self._to_emails = os.getenv("TO_EMAILS")
-        self._from_email = os.getenv("FROM_EMAIL")
+        self._to_emails = os.getenv("TO_EMAILS", default="")
+        self._from_email = os.getenv("FROM_EMAIL", default="")
         self._content = content
+        print("DEBUG MAILER START")
+        print(self._subject)
+        print(self._attachments)
+        print(self._client)
+        print(self._to_emails)
+        print(self._from_email)
+        print(self._content)
+        print("DEBUG MAILER END")
 
     def send(self):
         message = MIMEMultipart()
@@ -61,15 +69,3 @@ class SesMailer(object):
             )
 
             return part
-
-    def parse_input_emails(self, input_emails):
-        emails = input_emails.split(",")
-
-        emails_accumulator = []
-
-        for email in emails:
-            email_configuration = email.split("|")
-            item_tuple = (email_configuration[0], email_configuration[1])
-            emails_accumulator.append(item_tuple)
-
-        return emails_accumulator

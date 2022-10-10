@@ -75,7 +75,6 @@ jobs:
           command: |
             touch .env
             source venv/bin/activate
-            export TO_EMAILS=$TO_EMAILS_DEBUG
             python download.py
             python parse.py
       - run:
@@ -107,7 +106,7 @@ workflows:
             branches:
               ignore:
                 - main
-      - test:
+      - debug:
           context: trade-tariff
           filters:
             branches:
