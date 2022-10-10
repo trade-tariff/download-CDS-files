@@ -32,26 +32,28 @@ class XmlFile(object):
 
         tree = ET.parse(self.file_path)
         self.root = tree.getroot()
-        self.get_results_info()
-        self.parse_filename()
 
-        self.get_footnote_types()
-        self.get_footnotes()
-        self.get_additional_codes()
-        self.get_certificates()
-        self.get_measures()
-        self.get_commodities()
-        self.get_quota_order_numbers()
-        self.get_quota_definitions()
-        self.get_geographical_areas()
-        self.get_base_regulations()
+        self.total_rows = 0
+
+        self.get_results_info()
+
+        self.total_rows += self.get_footnote_types()
+        self.total_rows += self.get_footnotes()
+        self.total_rows += self.get_additional_codes()
+        self.total_rows += self.get_certificates()
+        self.total_rows += self.get_measures()
+        self.total_rows += self.get_commodities()
+        self.total_rows += self.get_quota_order_numbers()
+        self.total_rows += self.get_quota_definitions()
+        self.total_rows += self.get_geographical_areas()
+        self.total_rows += self.get_base_regulations()
 
         g.excel.close_excel()
 
         self.mail_extract()
 
     def mail_extract(self):
-        if int(os.getenv("SEND_MAIL", "0")) == 1:
+        if self.should_send_mail():
             SesMailer.build_for_cds_upload().send()
 
     def get_footnote_types(self):
@@ -80,6 +82,8 @@ class XmlFile(object):
                 row_count += 1
                 FootnoteType(footnote_type, worksheet, row_count)
 
+        return row_count
+
     def get_footnotes(self):
         row_count = 0
         footnotes = self.root.find(".//findFootnoteByDatesResponse")
@@ -105,6 +109,8 @@ class XmlFile(object):
             for footnote in footnotes:
                 row_count += 1
                 Footnote(footnote, worksheet, row_count)
+
+        return row_count
 
     def get_additional_codes(self):
         row_count = 0
@@ -132,6 +138,8 @@ class XmlFile(object):
                 row_count += 1
                 AdditionalCode(additional_code, worksheet, row_count)
 
+        return row_count
+
     def get_certificates(self):
         row_count = 0
         certificates = self.root.find(".//findCertificateByDatesResponse")
@@ -157,6 +165,8 @@ class XmlFile(object):
             for certificate in certificates:
                 row_count += 1
                 Certificate(certificate, worksheet, row_count)
+
+        return row_count
 
     def get_base_regulations(self):
         row_count = 0
@@ -184,6 +194,8 @@ class XmlFile(object):
             for base_regulation in base_regulations:
                 row_count += 1
                 BaseRegulation(base_regulation, worksheet, row_count)
+
+        return row_count
 
     def get_measures(self):
         row_count = 0
@@ -244,6 +256,8 @@ class XmlFile(object):
             range = "A1:M" + str(row_count)
             worksheet.autofilter(range)
 
+        return row_count
+
     def get_commodities(self):
         row_count = 0
         commodities = self.root.find(".//findGoodsNomenclatureByDatesResponse")
@@ -299,6 +313,8 @@ class XmlFile(object):
                 range = "A1:H" + str(row_count)
                 worksheet.autofilter(range)
 
+        return row_count
+
     def get_quota_order_numbers(self):
         row_count = 0
         quotas = self.root.find(".//findQuotaOrderNumberByDatesResponseHistory")
@@ -316,6 +332,8 @@ class XmlFile(object):
             for quota in quotas:
                 row_count += 1
                 QuotaOrderNumber(quota, worksheet, row_count)
+
+        return row_count
 
     def get_geographical_areas(self):
         row_count = 0
@@ -361,6 +379,8 @@ class XmlFile(object):
                 geographical_area_object.row_count = row_count
                 geographical_area_object.write_data()
                 row_count += 1
+
+        return row_count
 
     def get_quota_definitions(self):
         row_count = 0
@@ -418,12 +438,12 @@ class XmlFile(object):
                 quota_definition_object.write_data()
                 row_count += 1
 
+        return row_count
+
     def get_results_info(self):
         results_info = self.root.find("ResultsInfo")
         self.total_records = results_info.find("totalRecords").text
         self.execution_date = results_info.find("executionDate").text
 
-    def parse_filename(self):
-        self.export_date = func.parse_date(self.filename[7:15])
-        self.range_start = func.parse_date(self.filename[23:31])
-        self.range_end = func.parse_date(self.filename[39:47])
+    def should_send_mail(self):
+        return int(os.getenv("SEND_MAIL", "0")) == 1 and self.total_rows > 0
