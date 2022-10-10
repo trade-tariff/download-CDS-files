@@ -4,11 +4,12 @@ from dotenv import load_dotenv
 import classes.functions as f
 from .xml_file import XmlFile
 
+load_dotenv(".env")
+
 
 class Parser(object):
     def __init__(self):
-        load_dotenv(".env")
-        self.OVERWRITE_XLSX = int(os.getenv("OVERWRITE_XLSX"))
+        self.OVERWRITE_XLSX = int(os.getenv("OVERWRITE_XLSX", "0"))
         self.path = os.path.join(os.getcwd(), "resources")
         self.xml_path = os.path.join(self.path, "xml")
         self.xlsx_path = os.path.join(self.path, "xlsx")
@@ -33,6 +34,5 @@ class Parser(object):
     def check_exists(self, filename):
         filename = filename.replace("xml", "xlsx")
         xlsx_filename = os.path.join(self.xlsx_path, filename)
-        exists = os.path.exists(xlsx_filename)
 
-        return exists
+        return os.path.exists(xlsx_filename)

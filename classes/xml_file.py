@@ -1,10 +1,8 @@
 import os
-import json
 import xml.etree.ElementTree as ET
 import classes.globals as g
 from classes.ses_mailer import SesMailer
 
-import classes.functions as func
 from cds_objects.footnote_type import FootnoteType
 from cds_objects.footnote import Footnote
 from cds_objects.additional_code import AdditionalCode
@@ -29,12 +27,12 @@ class XmlFile(object):
         # Create the Excel
         g.excel = Excel()
         g.excel.create_excel(self.path, self.filename)
-        print("Creating file", self.filename.replace("xml", "xlsx"))
+        print("Creating file", os.path.basename(g.excel.excel_filename))
 
         tree = ET.parse(self.file_path)
         self.root = tree.getroot()
+
         self.get_results_info()
-        self.parse_filename()
 
         self.get_footnote_types()
         self.get_footnotes()
@@ -49,54 +47,11 @@ class XmlFile(object):
 
         g.excel.close_excel()
 
-        self.write_changes()
-
         self.mail_extract()
 
     def mail_extract(self):
-        if int(os.getenv("SEND_MAIL")) == 1:
+        if self.should_send_mail():
             SesMailer.build_for_cds_upload().send()
-
-    def write_changes(self):
-        self.json_path = self.path.replace("xml", "json")
-        temp = self.filename.split("T")[0] + ".json"
-        self.json_filename = temp
-        self.json_filename = os.path.join(self.json_path, self.json_filename)
-
-        my_dict = {}
-        consolidated_commodities = []
-        measures = []
-        commodities = []
-        quota_definitions = []
-        summary = {}
-        summary["execution_date"] = self.execution_date
-        summary["change_count"] = str(len(g.change_list))
-        for change in g.change_list:
-            if change.object_type == "Measure":
-                measures.append(change.__dict__)
-                consolidated_commodities += change.impacted_end_lines
-
-            elif change.object_type == "Commodity":
-                commodities.append(change.__dict__)
-                consolidated_commodities += change.impacted_end_lines
-
-            elif change.object_type == "Quota definition":
-                quota_definitions.append(change.__dict__)
-                consolidated_commodities += change.impacted_end_lines
-
-        consolidated_commodities = list(set(consolidated_commodities))
-        consolidated_commodities.sort()
-
-        my_dict["summary"] = summary
-        my_dict["updated_commodity_codes"] = consolidated_commodities
-        my_dict["commodity_changes"] = commodities
-        my_dict["measure_changes"] = measures
-        my_dict["quota_definition_changes"] = quota_definitions
-
-        f = open(self.json_filename, "w+")
-        my_string = json.dumps(my_dict, indent=2, sort_keys=False)
-        f.write(my_string)
-        f.close()
 
     def get_footnote_types(self):
         row_count = 0
@@ -124,6 +79,8 @@ class XmlFile(object):
                 row_count += 1
                 FootnoteType(footnote_type, worksheet, row_count)
 
+        return row_count
+
     def get_footnotes(self):
         row_count = 0
         footnotes = self.root.find(".//findFootnoteByDatesResponse")
@@ -149,6 +106,8 @@ class XmlFile(object):
             for footnote in footnotes:
                 row_count += 1
                 Footnote(footnote, worksheet, row_count)
+
+        return row_count
 
     def get_additional_codes(self):
         row_count = 0
@@ -176,6 +135,8 @@ class XmlFile(object):
                 row_count += 1
                 AdditionalCode(additional_code, worksheet, row_count)
 
+        return row_count
+
     def get_certificates(self):
         row_count = 0
         certificates = self.root.find(".//findCertificateByDatesResponse")
@@ -201,6 +162,8 @@ class XmlFile(object):
             for certificate in certificates:
                 row_count += 1
                 Certificate(certificate, worksheet, row_count)
+
+        return row_count
 
     def get_base_regulations(self):
         row_count = 0
@@ -228,6 +191,8 @@ class XmlFile(object):
             for base_regulation in base_regulations:
                 row_count += 1
                 BaseRegulation(base_regulation, worksheet, row_count)
+
+        return row_count
 
     def get_measures(self):
         row_count = 0
@@ -288,6 +253,8 @@ class XmlFile(object):
             range = "A1:M" + str(row_count)
             worksheet.autofilter(range)
 
+        return row_count
+
     def get_commodities(self):
         row_count = 0
         commodities = self.root.find(".//findGoodsNomenclatureByDatesResponse")
@@ -343,6 +310,8 @@ class XmlFile(object):
                 range = "A1:H" + str(row_count)
                 worksheet.autofilter(range)
 
+        return row_count
+
     def get_quota_order_numbers(self):
         row_count = 0
         quotas = self.root.find(".//findQuotaOrderNumberByDatesResponseHistory")
@@ -360,6 +329,8 @@ class XmlFile(object):
             for quota in quotas:
                 row_count += 1
                 QuotaOrderNumber(quota, worksheet, row_count)
+
+        return row_count
 
     def get_geographical_areas(self):
         row_count = 0
@@ -405,6 +376,8 @@ class XmlFile(object):
                 geographical_area_object.row_count = row_count
                 geographical_area_object.write_data()
                 row_count += 1
+
+        return row_count
 
     def get_quota_definitions(self):
         row_count = 0
@@ -462,12 +435,12 @@ class XmlFile(object):
                 quota_definition_object.write_data()
                 row_count += 1
 
+        return row_count
+
     def get_results_info(self):
         results_info = self.root.find("ResultsInfo")
-        self.total_records = results_info.find("totalRecords").text
+        self.total_records = int(results_info.find("totalRecords").text)
         self.execution_date = results_info.find("executionDate").text
 
-    def parse_filename(self):
-        self.export_date = func.parse_date(self.filename[7:15])
-        self.range_start = func.parse_date(self.filename[23:31])
-        self.range_end = func.parse_date(self.filename[39:47])
+    def should_send_mail(self):
+        return int(os.getenv("SEND_MAIL", "0")) == 1 and self.total_records > 0
