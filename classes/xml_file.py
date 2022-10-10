@@ -32,20 +32,18 @@ class XmlFile(object):
         tree = ET.parse(self.file_path)
         self.root = tree.getroot()
 
-        self.total_rows = 0
-
         self.get_results_info()
 
-        self.total_rows += self.get_footnote_types()
-        self.total_rows += self.get_footnotes()
-        self.total_rows += self.get_additional_codes()
-        self.total_rows += self.get_certificates()
-        self.total_rows += self.get_measures()
-        self.total_rows += self.get_commodities()
-        self.total_rows += self.get_quota_order_numbers()
-        self.total_rows += self.get_quota_definitions()
-        self.total_rows += self.get_geographical_areas()
-        self.total_rows += self.get_base_regulations()
+        self.get_footnote_types()
+        self.get_footnotes()
+        self.get_additional_codes()
+        self.get_certificates()
+        self.get_measures()
+        self.get_commodities()
+        self.get_quota_order_numbers()
+        self.get_quota_definitions()
+        self.get_geographical_areas()
+        self.get_base_regulations()
 
         g.excel.close_excel()
 
