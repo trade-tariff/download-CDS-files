@@ -86,7 +86,7 @@ workflows:
   debug:
     triggers:
       - schedule:
-          cron: "00 8 * * 1,2,3,4,5" # Runs after each ETL job in UK OTT
+          cron: "00 7 * * 1,2,3,4,5" # Runs after each ETL job in UK OTT - this is UTC
           filters:
             branches:
               only:
