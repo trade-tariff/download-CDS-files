@@ -39,7 +39,7 @@ class GeographyList(object):
 
     def load(self):
         with ReferenceDataHandler(
-            "/api/v2/geographical_areas?filter['exclude_none']=true"
+            "/api/v2/geographical_areas?filter[exclude_none]=true"
         ) as geographical_areas:
             for geographical_area in geographical_areas:
                 self.geography_dict[geographical_area["id"]] = geographical_area[
