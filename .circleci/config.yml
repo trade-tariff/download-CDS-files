@@ -82,7 +82,7 @@ jobs:
           command: |
             aws s3 sync resources/ s3://$REPORTING_BUCKET_NAME/changes/uk/
       - slack/notify:
-          channel: deployments
+          channel: tariffs-etl
           event: pass
           template: basic_success_1
       - slack/notify:
@@ -114,7 +114,7 @@ workflows:
             branches:
               ignore:
                 - main
-      - debug:
+      - test:
           context: trade-tariff
           filters:
             branches:
