@@ -26,7 +26,7 @@ class ReferenceDataHandler(object):
 
         except Exception:
             print("Failed to download reference data", self._url)
-            sys.exit()
+            sys.exit(1)
 
     def __exit__(self, _a, _b, _c):
         pass
