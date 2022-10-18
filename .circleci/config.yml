@@ -81,6 +81,14 @@ jobs:
           name: "Store data files"
           command: |
             aws s3 sync resources/ s3://$REPORTING_BUCKET_NAME/changes/uk/
+      - slack/notify:
+          channel: deployments
+          event: pass
+          template: basic_success_1
+      - slack/notify:
+          channel: deployments
+          event: fail
+          template: basic_fail_1
 
 workflows:
   debug:
@@ -98,14 +106,6 @@ workflows:
             branches:
               only:
                 - main
-      - slack/notify:
-          channel: deployments
-          event: pass
-          template: basic_success_1
-      - slack/notify:
-          channel: deployments
-          event: fail
-          template: basic_fail_1
 
   ci:
     jobs:
