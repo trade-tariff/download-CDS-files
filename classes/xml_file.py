@@ -443,4 +443,4 @@ class XmlFile(object):
         self.execution_date = results_info.find("executionDate").text
 
     def should_send_mail(self):
-        return int(os.getenv("SEND_MAIL", "0")) == 1 and self.total_records > 0
+        return int(os.getenv("SEND_MAIL", "0")) == 1

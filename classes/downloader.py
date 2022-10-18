@@ -28,7 +28,6 @@ class Downloader(object):
         ssl._create_default_https_context = ssl._create_unverified_context
 
     def get_access_token(self):
-        # Request auth token
         url = self.domain + "oauth/token"
         payload = "client_secret={}&client_id={}&grant_type=client_credentials".format(
             self.client_secret, self.client_id
@@ -36,8 +35,9 @@ class Downloader(object):
         headers = {"content-type": "application/x-www-form-urlencoded"}
         response = requests.request("POST", url, data=payload, headers=headers)
         if response.status_code != 200:
+            print('Failed to retrieve an an access token')
             print(response.text)
-            sys.exit()
+            sys.exit(1)
 
         my_array = response.json()
         self.access_token = my_array["access_token"]
@@ -59,7 +59,6 @@ class Downloader(object):
             cds_file.download_url = file_entry["downloadURL"]
             self.cds_files.append(cds_file)
 
-        # sys.exit()
         self.cds_files = sorted(self.cds_files, key=lambda x: x.filename, reverse=True)
 
         resource_path = os.path.join(os.getcwd(), "resources")
@@ -184,7 +183,6 @@ class Downloader(object):
             self.cds_files.append(cds_file)
             print(file_entry["filename"])
 
-        # sys.exit()
         self.cds_files = sorted(self.cds_files, key=lambda x: x.filename, reverse=True)
 
         for file_entry in self.cds_files:
