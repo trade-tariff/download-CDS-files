@@ -1,3 +1,5 @@
+import time
+import random
 import os
 import sys
 import requests
@@ -14,22 +16,32 @@ class ReferenceDataHandler(object):
         self._yield_response = yield_response
 
     def __enter__(self):
-        try:
-            response_json = requests.request(
-                "GET", self._url, headers=self._headers
-            ).json()
-
-            if self._yield_response:
-                return response_json
-            else:
-                return response_json["data"]
-
-        except Exception:
-            print("Failed to download reference data", self._url)
-            sys.exit(1)
+        return self.retry_with_backoff(self.do_fetch)
 
     def __exit__(self, _a, _b, _c):
         pass
+
+    def do_fetch(self):
+        response_json = requests.request("GET", self._url, headers=self._headers).json()
+
+        if self._yield_response:
+            return response_json
+        else:
+            return response_json["data"]
+
+    def retry_with_backoff(self, function, retries=5, backoff_in_seconds=1):
+        x = 0
+        while True:
+            try:
+                return function()
+            except Exception:
+                if x == retries:
+                    print("Failed to download reference data", self._url)
+                    sys.exit(1)
+
+                sleep = backoff_in_seconds * 2**x + random.uniform(0, 1)
+                time.sleep(sleep)
+                x += 1
 
 
 class GeographyList(object):
