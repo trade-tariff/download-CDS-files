@@ -29,11 +29,10 @@ class ReferenceDataHandler(object):
         else:
             return response_json["data"]
 
-    def retry_with_backoff(self, function, retries=5, backoff_in_seconds=1):
-        number_of_retries = 0
-        while True:
+    def retry_with_backoff(self, callback, retries=5, backoff_in_seconds=1):
+        for number_of_retries in range(1, retries + 1):
             try:
-                return function()
+                return callback()
             except Exception:
                 if number_of_retries == retries:
                     print("Failed to download reference data", self._url)
@@ -43,7 +42,6 @@ class ReferenceDataHandler(object):
                     0, 1
                 )
                 time.sleep(sleep)
-                number_of_retries += 1
 
 
 class GeographyList(object):
