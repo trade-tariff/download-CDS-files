@@ -24,7 +24,7 @@ class XmlFile(object):
 
     def parse_xml(self):
         # Create the Excel
-        self.excel = Excel(self.filename, self.path)
+        self.excel = Excel(self.path, self.filename)
         self.excel.create_excel()
         print("Creating file", os.path.basename(self.excel.excel_filename))
 

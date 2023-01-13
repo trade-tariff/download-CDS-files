@@ -55,7 +55,7 @@ class AdditionalCode(Master):
             self.row_count,
             4,
             Master.format_date(self.validity_end_date),
-            self.xml_file.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
             self.row_count, 5, self.description_string, self.xml_file.excel.format_wrap

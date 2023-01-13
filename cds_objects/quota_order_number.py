@@ -1,5 +1,4 @@
 from classes.master import Master
-import classes.globals as g
 
 
 class QuotaOrderNumber(Master):

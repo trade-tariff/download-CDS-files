@@ -1,5 +1,4 @@
 from classes.master import Master
-import classes.globals as g
 
 
 class FootnoteType(Master):
@@ -53,4 +52,6 @@ class FootnoteType(Master):
             Master.format_date(self.validity_end_date),
             self.xml_file.excel.format_wrap,
         )
-        self.worksheet.write(self.row_count, 5, self.description, self.xml_file.excel.format_wrap)
+        self.worksheet.write(
+            self.row_count, 5, self.description, self.xml_file.excel.format_wrap
+        )
