@@ -1,10 +1,10 @@
 from classes.master import Master
-import classes.globals as g
 
 
 class FootnoteType(Master):
-    def __init__(self, elem, worksheet, row_count):
+    def __init__(self, xml_file, elem, worksheet, row_count):
         Master.__init__(self, elem)
+        self.xml_file = xml_file
         self.elem = elem
         self.worksheet = worksheet
         self.row_count = row_count
@@ -32,24 +32,26 @@ class FootnoteType(Master):
             self.row_count,
             0,
             self.operation_text + " footnote type",
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 1, self.footnote_type_id, g.excel.format_wrap
+            self.row_count, 1, self.footnote_type_id, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
-            self.row_count, 2, self.application_code, g.excel.format_wrap
+            self.row_count, 2, self.application_code, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
             self.row_count,
             3,
             Master.format_date(self.validity_start_date),
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
             self.row_count,
             4,
             Master.format_date(self.validity_end_date),
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
-        self.worksheet.write(self.row_count, 5, self.description, g.excel.format_wrap)
+        self.worksheet.write(
+            self.row_count, 5, self.description, self.xml_file.excel.format_wrap
+        )

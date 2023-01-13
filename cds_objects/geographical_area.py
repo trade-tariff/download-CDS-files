@@ -1,12 +1,12 @@
 from classes.master import Master
-import classes.globals as g
 from cds_objects.geographical_area_description import GeographicalAreaDescription
 from cds_objects.geographical_area_membership import GeographicalAreaMembership
 
 
 class GeographicalArea(Master):
-    def __init__(self, elem, worksheet, row_count):
+    def __init__(self, xml_file, elem, worksheet, row_count):
         Master.__init__(self, elem)
+        self.xml_file = xml_file
         self.elem = elem
         self.worksheet = worksheet
         self.row_count = row_count
@@ -39,38 +39,46 @@ class GeographicalArea(Master):
             self.row_count,
             0,
             self.operation_text + " geographical area",
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 1, self.geographical_area_id, g.excel.format_wrap
+            self.row_count,
+            1,
+            self.geographical_area_id,
+            self.xml_file.excel.format_wrap,
         )
-        self.worksheet.write(self.row_count, 2, self.sid, g.excel.format_wrap)
+        self.worksheet.write(
+            self.row_count, 2, self.sid, self.xml_file.excel.format_wrap
+        )
         self.worksheet.write(
             self.row_count,
             3,
             Master.format_date(self.validity_start_date),
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
             self.row_count,
             4,
             Master.format_date(self.validity_end_date),
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 5, self.description_string, g.excel.format_wrap
+            self.row_count, 5, self.description_string, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
-            self.row_count, 6, self.current_membership_string, g.excel.format_wrap
+            self.row_count,
+            6,
+            self.current_membership_string,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 7, self.membership_string, g.excel.format_wrap
+            self.row_count, 7, self.membership_string, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
             self.row_count,
             8,
             self.parent_geographical_area_group_sid,
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
 
     def get_descriptions(self):

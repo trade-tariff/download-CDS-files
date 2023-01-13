@@ -5,8 +5,9 @@ from cds_objects.change import QuotaDefinitionChange
 
 
 class QuotaDefinition(Master):
-    def __init__(self, elem, worksheet, row_count):
+    def __init__(self, xml_file, elem, worksheet, row_count):
         Master.__init__(self, elem)
+        self.xml_file = xml_file
         self.elem = elem
         self.worksheet = worksheet
         self.row_count = row_count
@@ -56,42 +57,58 @@ class QuotaDefinition(Master):
     def write_data(self):
         # Write the Excel
         self.worksheet.write(
-            self.row_count, 0, self.operation_text + " definition", g.excel.format_wrap
+            self.row_count,
+            0,
+            self.operation_text + " definition",
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 1, self.quota_order_number_id, g.excel.format_wrap
+            self.row_count,
+            1,
+            self.quota_order_number_id,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 2, self.quota_balance_event_string, g.excel.format_wrap
+            self.row_count,
+            2,
+            self.quota_balance_event_string,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 3, self.comm_code_string, g.excel.format_force_text
-        )
-        self.worksheet.write(self.row_count, 4, self.sid, g.excel.format_wrap)
-        self.worksheet.write(
-            self.row_count, 5, self.critical_state, g.excel.format_wrap
-        )
-        self.worksheet.write(
-            self.row_count, 6, self.critical_threshold, g.excel.format_wrap
+            self.row_count,
+            3,
+            self.comm_code_string,
+            self.xml_file.excel.format_force_text,
         )
         self.worksheet.write(
-            self.row_count, 7, self.initial_volume, g.excel.format_wrap
+            self.row_count, 4, self.sid, self.xml_file.excel.format_wrap
         )
-        self.worksheet.write(self.row_count, 8, self.volume, g.excel.format_wrap)
         self.worksheet.write(
-            self.row_count, 9, self.maximum_precision, g.excel.format_wrap
+            self.row_count, 5, self.critical_state, self.xml_file.excel.format_wrap
+        )
+        self.worksheet.write(
+            self.row_count, 6, self.critical_threshold, self.xml_file.excel.format_wrap
+        )
+        self.worksheet.write(
+            self.row_count, 7, self.initial_volume, self.xml_file.excel.format_wrap
+        )
+        self.worksheet.write(
+            self.row_count, 8, self.volume, self.xml_file.excel.format_wrap
+        )
+        self.worksheet.write(
+            self.row_count, 9, self.maximum_precision, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
             self.row_count,
             10,
             Master.format_date(self.validity_start_date),
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
             self.row_count,
             11,
             Master.format_date(self.validity_end_date),
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
 
     def get_balance_events(self):

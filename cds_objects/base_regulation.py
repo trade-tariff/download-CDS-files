@@ -1,10 +1,10 @@
 from classes.master import Master
-import classes.globals as g
 
 
 class BaseRegulation(Master):
-    def __init__(self, elem, worksheet, row_count):
+    def __init__(self, xml_file, elem, worksheet, row_count):
         Master.__init__(self, elem)
+        self.xml_file = xml_file
         self.elem = elem
         self.worksheet = worksheet
         self.row_count = row_count
@@ -32,23 +32,26 @@ class BaseRegulation(Master):
             self.row_count,
             0,
             self.operation_text + " base regulation",
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 1, self.base_regulation_id, g.excel.format_wrap
+            self.row_count, 1, self.base_regulation_id, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
-            self.row_count, 2, self.information_text, g.excel.format_wrap
+            self.row_count, 2, self.information_text, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
             self.row_count,
             3,
             Master.format_date(self.validity_start_date),
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 4, self.regulation_group_id, g.excel.format_wrap
+            self.row_count, 4, self.regulation_group_id, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
-            self.row_count, 5, self.regulation_role_type_id, g.excel.format_wrap
+            self.row_count,
+            5,
+            self.regulation_role_type_id,
+            self.xml_file.excel.format_wrap,
         )

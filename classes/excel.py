@@ -4,12 +4,11 @@ import classes.functions as f
 
 
 class Excel(object):
-    def __init__(self):
-        pass
-
-    def create_excel(self, path, filename):
+    def __init__(self, path, filename):
         self.path = path
         self.filename = filename
+
+    def create_excel(self):
         self.excel_filename = f.xml_to_xlsx_filename(self.filename)
         self.file_date = f.xml_to_file_date(self.filename)
 
