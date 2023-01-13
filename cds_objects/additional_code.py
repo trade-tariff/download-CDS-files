@@ -1,16 +1,16 @@
 from classes.master import Master
 from cds_objects.additional_code_description import AdditionalCodeDescription
-import classes.globals as g
 
 
 class AdditionalCode(Master):
-    def __init__(self, elem, worksheet, row_count):
+    def __init__(self, xml_file, elem, worksheet, row_count):
         Master.__init__(self, elem)
         self.elem = elem
         self.worksheet = worksheet
         self.row_count = row_count
         self.descriptions = []
         self.description_string = ""
+        self.xml_file = xml_file
         self.get_data()
         self.write_data()
 
@@ -34,28 +34,31 @@ class AdditionalCode(Master):
             self.row_count,
             0,
             self.operation_text + " additional code",
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 1, self.additional_code_type_id, g.excel.format_wrap
+            self.row_count,
+            1,
+            self.additional_code_type_id,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 2, self.additional_code_id, g.excel.format_wrap
+            self.row_count, 2, self.additional_code_id, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
             self.row_count,
             3,
             Master.format_date(self.validity_start_date),
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
             self.row_count,
             4,
             Master.format_date(self.validity_end_date),
-            g.excel.format_wrap,
+            self.xml_file.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 5, self.description_string, g.excel.format_wrap
+            self.row_count, 5, self.description_string, self.xml_file.excel.format_wrap
         )
 
     def get_descriptions(self):

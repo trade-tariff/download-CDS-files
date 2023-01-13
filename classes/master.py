@@ -14,11 +14,6 @@ class Master(object):
 
         self.expand_operation()
 
-        # self.hjid = elem.find("hjid").text
-        # self.operation_date = "2021-01-01"
-        # self.status = elem.find("metainfo/status").text
-        # self.transactionDate = elem.find("metainfo/transactionDate").text
-
     def expand_operation(self):
         if self.operation == "C":
             self.operation_text = "Create a new"

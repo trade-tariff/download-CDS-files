@@ -11,8 +11,9 @@ from cds_objects.footnote_association_measure import FootnoteAssociationMeasure
 
 
 class Measure(Master):
-    def __init__(self, elem, worksheet, row_count):
+    def __init__(self, xml_file, elem, worksheet, row_count):
         Master.__init__(self, elem)
+        self.xml_file = xml_file
         self.elem = elem
         self.worksheet = worksheet
         self.row_count = row_count
@@ -71,50 +72,50 @@ class Measure(Master):
     def write_data(self):
         # Write the Excel
         self.worksheet.write(
-            self.row_count, 0, self.operation_text + " measure", g.excel.format_wrap
+            self.row_count, 0, self.operation_text + " measure", self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
-            self.row_count, 1, self.goods_nomenclature_item_id, g.excel.format_wrap
+            self.row_count, 1, self.goods_nomenclature_item_id, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
-            self.row_count, 2, self.additional_code, g.excel.format_wrap
+            self.row_count, 2, self.additional_code, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
             self.row_count,
             3,
             self.measure_type_id + " (" + self.measure_type_description + ")",
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
             self.row_count,
             4,
             self.geographical_area_id + " (" + self.geographical_area_description + ")",
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
-        self.worksheet.write(self.row_count, 5, self.ordernumber, g.excel.format_wrap)
+        self.worksheet.write(self.row_count, 5, self.ordernumber, self.xml_file.excel.format_wrap)
         self.worksheet.write(
             self.row_count,
             6,
             Master.format_date(self.validity_start_date),
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
             self.row_count,
             7,
             Master.format_date(self.validity_end_date),
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
-        self.worksheet.write(self.row_count, 8, self.combined_duty, g.excel.format_wrap)
+        self.worksheet.write(self.row_count, 8, self.combined_duty, self.xml_file.excel.format_wrap)
         self.worksheet.write(
-            self.row_count, 9, self.exclusion_string, g.excel.format_wrap
-        )
-        self.worksheet.write(
-            self.row_count, 10, self.footnote_string, g.excel.format_wrap
+            self.row_count, 9, self.exclusion_string, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
-            self.row_count, 11, self.measure_condition_string_excel, g.excel.format_wrap
+            self.row_count, 10, self.footnote_string, self.xml_file.excel.format_wrap
         )
-        self.worksheet.write(self.row_count, 12, self.measure_sid, g.excel.format_wrap)
+        self.worksheet.write(
+            self.row_count, 11, self.measure_condition_string_excel, self.xml_file.excel.format_wrap
+        )
+        self.worksheet.write(self.row_count, 12, self.measure_sid, self.xml_file.excel.format_wrap)
 
     def get_measure_components(self):
         measure_components = self.elem.findall("measureComponent")

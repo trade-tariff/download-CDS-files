@@ -5,8 +5,9 @@ from cds_objects.change import CommodityChange
 
 
 class GoodsNomenclature(Master):
-    def __init__(self, elem, worksheet, row_count):
+    def __init__(self, xml_file, elem, worksheet, row_count):
         Master.__init__(self, elem)
+        self.xml_file = xml_file
         self.elem = elem
         self.worksheet = worksheet
         self.row_count = row_count
@@ -44,34 +45,46 @@ class GoodsNomenclature(Master):
     def write_data(self):
         # Write the Excel
         self.worksheet.write(
-            self.row_count, 0, self.operation_text + " commodity", g.excel.format_wrap
+            self.row_count,
+            0,
+            self.operation_text + " commodity",
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 1, self.goods_nomenclature_item_id, g.excel.format_wrap
+            self.row_count,
+            1,
+            self.goods_nomenclature_item_id,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 2, self.product_line_suffix, g.excel.format_wrap
+            self.row_count, 2, self.product_line_suffix, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
-            self.row_count, 3, self.description_string, g.excel.format_wrap
+            self.row_count, 3, self.description_string, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
             self.row_count,
             4,
             Master.format_date(self.validity_start_date),
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
             self.row_count,
             5,
             Master.format_date(self.validity_end_date),
-            g.excel.format_wrap,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 6, self.statistical_indicator, g.excel.format_wrap
+            self.row_count,
+            6,
+            self.statistical_indicator,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 7, self.goods_nomenclature_sid, g.excel.format_wrap
+            self.row_count,
+            7,
+            self.goods_nomenclature_sid,
+            self.xml_file.excel.format_wrap,
         )
 
     def get_descriptions(self):

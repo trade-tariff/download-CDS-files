@@ -6,8 +6,6 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-import classes.globals as g
-
 load_dotenv()
 
 
@@ -15,15 +13,17 @@ class SesMailer(object):
     SUBJECT = "CDS data load {edition}"
     EMAIL_CONTENT = open("resources/email_template.html", "r").read()
 
-    def build_for_test():
+    @classmethod
+    def build_for_test(cls):
         return SesMailer("Testing", "<p>Hello, World</p>", ["test.csv"])
 
-    def build_for_cds_upload():
-        edition = g.excel.file_date
+    @classmethod
+    def build_for_cds_upload(cls, excel):
+        edition = excel.file_date
         subject = SesMailer.SUBJECT.format(edition=edition)
         content = SesMailer.EMAIL_CONTENT.format(edition=edition)
 
-        return SesMailer(subject, content, [g.excel.excel_filename])
+        return SesMailer(subject, content, [excel.excel_filename])
 
     def __init__(self, subject, content, attachments=[]):
         self._subject = subject
