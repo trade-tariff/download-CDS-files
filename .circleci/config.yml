@@ -46,7 +46,7 @@ jobs:
             aws s3 sync --exclude ".*" --dryrun --size-only resources/xlsx/ s3://$REPORTING_BUCKET_NAME/changes/uk/
 
 
-  debug:
+  email_changes:
     docker:
       - image: cimg/python:3.10.7
     environment:
@@ -87,7 +87,7 @@ jobs:
           template: basic_fail_1
 
 workflows:
-  debug:
+  week_day:
     triggers:
       - schedule:
           cron: "00 7 * * 1,2,3,4,5" # Runs after each ETL job in UK OTT - this is UTC
@@ -96,7 +96,7 @@ workflows:
               only:
                 - main
     jobs:
-      - debug:
+      - email_changes:
           context: trade-tariff
           filters:
             branches:
