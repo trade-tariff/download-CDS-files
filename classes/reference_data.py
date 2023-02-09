@@ -3,6 +3,7 @@ import random
 import os
 import sys
 import requests
+import traceback
 
 from dotenv import load_dotenv
 
@@ -21,21 +22,37 @@ class ReferenceDataHandler(object):
     def __exit__(self, _a, _b, _c):
         pass
 
+    def instrument_response(self, response):
+        if not response.status_code == 200:
+            print(
+                "URL: ",
+                response.url,
+            )
+            print("Status: ", response.status_code)
+            print("History: ", [r.url for r in response.history])
+            print("Body: ", response.text)
+
     def do_fetch(self):
-        response_json = requests.request("GET", self._url, headers=self._headers).json()
+        response = requests.get(self._url, headers=self._headers, allow_redirects=True)
+
+        self.instrument_response(response)
+
+        response_json = response.json()
 
         if self._yield_response:
             return response_json
         else:
             return response_json["data"]
 
-    def retry_with_backoff(self, callback, retries=5, backoff_in_seconds=1):
+    def retry_with_backoff(self, callback, retries=6, backoff_in_seconds=1):
         for number_of_retries in range(1, retries + 1):
             try:
                 return callback()
             except Exception:
                 if number_of_retries == retries:
                     print("Failed to download reference data", self._url)
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    traceback.print_exception(exc_type, exc_value, exc_traceback)
                     sys.exit(1)
 
                 sleep = backoff_in_seconds * 2**number_of_retries + random.uniform(
