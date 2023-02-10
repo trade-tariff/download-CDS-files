@@ -6,16 +6,16 @@ orbs:
 
 jobs:
   lint:
-      docker:
-        - image: cimg/python:3.10.7
-      steps:
-          - checkout
-          - run:
-              name: install flake8
-              command: pip install flake8==5.0.4
-          - run:
-              name: run flake8
-              command: flake8 .
+    docker:
+      - image: cimg/python:3.10.7
+    steps:
+      - checkout
+      - run:
+          name: install flake8
+          command: pip install flake8==5.0.4
+      - run:
+          name: run flake8
+          command: flake8 .
   test:
     docker:
       - image: cimg/python:3.10.7
@@ -44,7 +44,6 @@ jobs:
             python download.py
             python parse.py
             aws s3 sync --exclude ".*" --dryrun --size-only resources/xlsx/ s3://$REPORTING_BUCKET_NAME/changes/uk/
-
 
   email_changes:
     docker:
