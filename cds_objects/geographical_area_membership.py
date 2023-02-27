@@ -49,4 +49,11 @@ class GeographicalAreaMembership(Master):
             )
 
     def get_member_description(self):
-        self.member_description = g.geography_hjid_dict[self.hjid_of_member]
+        if self.hjid_of_member in g.geography_hjid_dict:
+            self.member_description = g.geography_hjid_dict[self.hjid_of_member]
+        else:
+            self.member_description = (
+                "HJID "
+                + str(self.hjid_of_member)
+                + " not found. Is this an expired geographical area?"
+            )
