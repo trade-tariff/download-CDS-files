@@ -115,3 +115,9 @@ workflows:
             branches:
               ignore:
                 - main
+      - email_changes:
+          context: trade-tariff
+          filters:
+            branches:
+              ignore:
+                - main
