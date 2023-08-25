@@ -1,4 +1,5 @@
 import boto3
+import datetime
 import os
 
 from dotenv import load_dotenv
@@ -19,9 +20,15 @@ class SesMailer(object):
 
     @classmethod
     def build_for_cds_upload(cls, excel):
-        edition = excel.file_date
-        subject = SesMailer.SUBJECT.format(edition=edition)
-        content = SesMailer.EMAIL_CONTENT.format(edition=edition)
+        produced_date = excel.file_date
+        loaded_date = (
+            datetime.datetime.strptime(produced_date, "%Y-%m-%d")
+            + datetime.timedelta(days=1)
+        ).strftime("%Y-%m-%d")
+        subject = SesMailer.SUBJECT.format(edition=produced_date)
+        content = SesMailer.EMAIL_CONTENT.format(
+            produced_date=produced_date, loaded_date=loaded_date
+        )
 
         return SesMailer(subject, content, [excel.excel_filename])
 
