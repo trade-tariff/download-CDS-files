@@ -11,7 +11,7 @@ load_dotenv()
 
 
 class SesMailer(object):
-    SUBJECT = "CDS data load {edition}"
+    SUBJECT = "CDS data load {produced_date}"
     EMAIL_CONTENT = open("resources/email_template.html", "r").read()
 
     @classmethod
@@ -25,7 +25,7 @@ class SesMailer(object):
             datetime.datetime.strptime(produced_date, "%Y-%m-%d")
             + datetime.timedelta(days=1)
         ).strftime("%Y-%m-%d")
-        subject = SesMailer.SUBJECT.format(edition=produced_date)
+        subject = SesMailer.SUBJECT.format(produced_date=produced_date)
         content = SesMailer.EMAIL_CONTENT.format(
             produced_date=produced_date, loaded_date=loaded_date
         )
