@@ -1,6 +1,6 @@
 XlsxWriter==3.1.2
 boto3==1.26.60
-botocore==1.29.165
+botocore==1.31.35
 certifi==2023.7.22
 charset-normalizer==3.2.0
 idna==3.4
