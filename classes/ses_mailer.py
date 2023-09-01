@@ -37,6 +37,7 @@ class SesMailer(object):
         self._attachments = attachments
         self._client = boto3.client("ses", region_name=os.getenv("AWS_REGION"))
         self._to_emails = os.getenv("TO_EMAILS", default="")
+        self._cc_emails = os.getenv("CC_EMAILS", default="")
         self._from_email = os.getenv("FROM_EMAIL", default="")
         self._content = content
 
@@ -45,6 +46,7 @@ class SesMailer(object):
         message["Subject"] = self._subject
         message["From"] = self._from_email
         message["To"] = self._to_emails
+        message["Cc"] = self._cc_emails
         body = MIMEText(self._content, "html")
         message.attach(body)
 
