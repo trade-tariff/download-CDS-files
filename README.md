@@ -6,6 +6,18 @@ into a human-readable XLSX format.
 These files are subsequently emailed to various stakeholders as part of a service run
 by the Online Trade Tariff team.
 
+The following is a flowchart of the process
+
+```mermaid
+graph TD
+    A[Circle CI Workflow at 7 am UTC] --> B[Sync files from trade-tariff-reporting S3 bucket]
+    B --> C[Download new files from SDES]
+    C --> D{Check if XLSX files already exist}
+    D -- Yes --> E[Assume files sent to third parties]
+    D -- No --> F[Parse XML files into XLSX format]
+    F --> G[Email via SES to relevant parties]
+```
+
 ## Getting started for local development
 
 ```bash
