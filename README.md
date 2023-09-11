@@ -11,8 +11,8 @@ The following is a flowchart of the process
 ```mermaid
 graph TD
     A[Circle CI Workflow at 7 am UTC] --> B[Sync files from trade-tariff-reporting S3 bucket]
-    B --> C[Download new files from SDES]
-    C --> D{Check if XLSX files already exist}
+    B --> C[Download new files from Secure Data Exchange Service - SDES]
+    C --> D{Check if XLSX files already exist?}
     D -- Yes --> E[Assume files sent to third parties]
     D -- No --> F[Parse XML files into XLSX format]
     F --> G[Email via SES to relevant parties]
