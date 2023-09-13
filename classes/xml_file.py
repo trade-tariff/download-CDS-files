@@ -2,6 +2,8 @@ import os
 import xml.etree.ElementTree as ET
 from classes.ses_mailer import SesMailer
 
+from cds_objects.measure_type import MeasureType
+from cds_objects.measurement_unit import MeasurementUnit
 from cds_objects.footnote_type import FootnoteType
 from cds_objects.footnote import Footnote
 from cds_objects.additional_code import AdditionalCode
@@ -21,18 +23,18 @@ class XmlFile(object):
         self.path = os.path.join(os.getcwd(), "resources")
         self.path = os.path.join(self.path, "xml")
         self.file_path = os.path.join(self.path, self.filename)
-
-    def parse_xml(self):
-        # Create the Excel
         self.excel = Excel(self.path, self.filename)
         self.excel.create_excel()
+
+    def parse_xml(self):
         print("Creating file", os.path.basename(self.excel.excel_filename))
 
         tree = ET.parse(self.file_path)
         self.root = tree.getroot()
 
         self.get_results_info()
-
+        self.get_measure_types()
+        self.get_measurement_units()
         self.get_footnote_types()
         self.get_footnotes()
         self.get_additional_codes()
@@ -51,6 +53,61 @@ class XmlFile(object):
     def mail_extract(self):
         if self.should_send_mail():
             SesMailer.build_for_cds_upload(self.excel).send()
+
+    def get_measure_types(self):
+        row_count = 0
+        measure_types = self.root.find(".//findMeasureTypeByDatesResponse")
+        if measure_types:
+            # Write Excel column headers
+            worksheet = self.excel.workbook.add_worksheet("Measure types")
+            data = (
+                "Action",
+                "Measure type ID",
+                "Start date",
+                "End date",
+                "Description",
+                "Trade movement code",
+                "Origin dest code",
+                "Measure component applicable code",
+                "Order number capture code",
+                "Measure explosion level",
+                "Priority code",
+            )
+            worksheet.write_row("A1", data, self.excel.format_bold)
+            worksheet.set_column(0, 0, 30)
+            worksheet.set_column(1, 10, 20)
+            worksheet.set_column(4, 4, 50)
+            worksheet.freeze_panes(1, 0)
+
+            # Get data
+            measure_types = measure_types.findall("MeasureType")
+            for measure_type in measure_types:
+                row_count += 1
+                MeasureType(measure_type, worksheet, row_count)
+
+    def get_measurement_units(self):
+        row_count = 0
+        measurement_units = self.root.find(".//findMeasurementUnitByDatesResponse")
+        if measurement_units:
+            # Write Excel column headers
+            worksheet = self.excel.workbook.add_worksheet("Measurement units")
+            data = (
+                "Action",
+                "Measurement unit code",
+                "Start date",
+                "End date",
+                "Description",
+            )
+            worksheet.write_row("A1", data, self.excel.format_bold)
+            worksheet.set_column(0, 3, 30)
+            worksheet.set_column(4, 4, 50)
+            worksheet.freeze_panes(1, 0)
+
+            # Get data
+            measurement_units = measurement_units.findall("MeasurementUnit")
+            for measurement_unit in measurement_units:
+                row_count += 1
+                MeasurementUnit(measurement_unit, worksheet, row_count)
 
     def get_footnote_types(self):
         row_count = 0

@@ -40,3 +40,5 @@ quota_order_number_dict = list.quota_order_number_dict
 change_list = []
 code_lists = []
 definition_list = {}
+
+excel = None
