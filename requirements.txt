@@ -1,4 +1,4 @@
-XlsxWriter==3.1.2
+XlsxWriter==3.1.5
 boto3==1.28.44
 certifi==2023.7.22
 charset-normalizer==3.2.0
