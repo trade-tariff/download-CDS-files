@@ -1,7 +1,7 @@
 XlsxWriter==3.1.6
 boto3==1.28.44
 certifi==2023.7.22
-charset-normalizer==3.3.0
+charset-normalizer==3.3.2
 idna==3.4
 jmespath==1.0.1
 lxml==4.9.3
