@@ -96,7 +96,7 @@ workflows:
                 - main
     jobs:
       - email_changes:
-          context: trade-tariff
+          context: trade-tariff-download-cds-files-production
           filters:
             branches:
               only:
@@ -110,7 +110,7 @@ workflows:
               ignore:
                 - main
       - test:
-          context: trade-tariff
+          context: trade-tariff-download-cds-files-production
           filters:
             branches:
               ignore:
