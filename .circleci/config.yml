@@ -115,3 +115,12 @@ workflows:
             branches:
               ignore:
                 - main
+
+      - email_changes:
+          context: trade-tariff-download-cds-files-production
+          requires:
+            - test
+          filters:
+            branches:
+              ignore:
+                - main
