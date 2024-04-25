@@ -55,16 +55,18 @@ class ReferenceDataHandler(object):
                     traceback.print_exception(exc_type, exc_value, exc_traceback)
                     sys.exit(1)
 
-                sleep = backoff_in_seconds * 2**number_of_retries + random.uniform(
-                    0, 1
-                )
+                sleep = backoff_in_seconds * 2**number_of_retries + random.uniform(0, 1)
                 time.sleep(sleep)
 
 
 class GeographyList(object):
+    class GeographicalAreas(dict):
+        def __missing__(self, key):
+            return f"Geographical area for {key} not found"
+
     def __init__(self):
-        self.geography_dict = {}
-        self.geography_hjid_dict = {}
+        self.geography_dict = GeographyList.GeographicalAreas()
+        self.geography_hjid_dict = GeographyList.GeographicalAreas()
 
     def load(self):
         with ReferenceDataHandler(
@@ -75,9 +77,9 @@ class GeographyList(object):
                     "attributes"
                 ]["description"]
 
-                self.geography_hjid_dict[
-                    geographical_area["attributes"]["hjid"]
-                ] = geographical_area["attributes"]["description"]
+                self.geography_hjid_dict[geographical_area["attributes"]["hjid"]] = (
+                    geographical_area["attributes"]["description"]
+                )
 
 
 class MeasureTypeList(object):
@@ -113,9 +115,9 @@ class ConditionCodeList(object):
             "/api/v2/measure_condition_codes"
         ) as measure_condition_codes:
             for measure_condition_code in measure_condition_codes:
-                self.condition_code_dict[
-                    measure_condition_code["id"]
-                ] = measure_condition_code["attributes"]["description"]
+                self.condition_code_dict[measure_condition_code["id"]] = (
+                    measure_condition_code["attributes"]["description"]
+                )
 
 
 class QuotaOrderNumberList(object):
