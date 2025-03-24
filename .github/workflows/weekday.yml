@@ -1,0 +1,84 @@
+name: Weekday Job
+on:
+  schedule:
+  - cron: 00 7 * * 1,2,3,4,5
+
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to run the workflow on'
+        required: true
+        default: 'main'
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: eu-west-2
+  ENVIRONMENT: production
+  IAM_ROLE_ARN: arn:aws:iam::382373577178:role/GithubActions-CDS-Downloader-File-Role
+  REPORTING_BUCKET_NAME: trade-tariff-reporting-382373577178
+  DATA_PATH: resources/xlsx/
+
+jobs:
+  email_changes:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libxml2-dev libxslt-dev
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        key: deps-1.0.0-${{ hashFiles('requirements.txt') }}
+        path: venv
+
+    - name: Setup Python environment
+      run: |
+        python -m venv venv
+        . venv/bin/activate && \
+        pip install --upgrade pip && \
+        pip install wheel && \
+        pip install -r requirements.txt
+
+    - name: Fetch Secrets from AWS Secrets Manager
+      uses: trade-tariff/trade-tariff-tools/.github/actions/fetch-secrets@main
+      with:
+        secret-name: "download-cds-files-configuration"
+
+    - name: Restore data files
+      run: aws s3 sync "s3://$REPORTING_BUCKET_NAME/changes/uk/" resources/
+
+    - name: Generate files and send email
+      run: |
+        touch .env
+        . venv/bin/activate
+        python download.py
+        python parse.py
+        python ses_mailer.py
+
+    - name: Store data files
+      run: aws s3 sync resources/ "s3://${{ env.REPORTING_BUCKET_NAME }}/changes/uk/"\
+          ${{ env.DATA_PATH }}
+
+  notifications:
+    runs-on: ubuntu-latest
+    needs: email_changes
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+      - uses: trade-tariff/trade-tariff-tools/.github/actions/slack-notify@main
+        with:
+          result: ${{ needs.email_changes.result }}
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
