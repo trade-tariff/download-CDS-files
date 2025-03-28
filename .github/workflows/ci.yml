@@ -1,0 +1,102 @@
+name: CI Jobs
+
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches-ignore:
+      - main
+
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to run the workflow on'
+        required: true
+        default: 'main'
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: eu-west-2
+  IAM_ROLE_ARN: arn:aws:iam::382373577178:role/GithubActions-CDS-Downloader-File-Role
+  REPORTING_BUCKET_NAME: trade-tariff-reporting-382373577178
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3'
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pre-commit-
+
+      - uses: trade-tariff/trade-tariff-tools/.github/actions/setup-ssh@main
+        with:
+          ssh-key: ${{ secrets.PRIVATE_SSH_KEY }}
+
+      - run: pip install pre-commit
+      - run: pre-commit run --all-files
+
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.12
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          apt-get update
+          apt-get install -y \
+          libxml2-dev \
+          libxslt-dev \
+          python3-dev \
+          awscli \
+          jq
+
+      - name: Setup Python environment
+        run: |
+          python -m venv venv
+          . venv/bin/activate && \
+          pip install --upgrade pip && \
+          pip install wheel
+
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          key: deps-1.0.0-${{ hashFiles('requirements.txt') }}
+          path: venv
+
+      - name: Install dependencies
+        run: |
+            . venv/bin/activate && pip install -r requirements.txt
+
+      - name: Fetch Secrets from AWS Secrets Manager
+        uses: trade-tariff/trade-tariff-tools/.github/actions/fetch-secrets@main
+        with:
+          secret-name: "download-cds-files-configuration"
+
+      - name: Run scripts
+        run: |
+          . venv/bin/activate && \
+          python download.py && \
+          python parse.py
+
+          aws s3 sync \
+          --exclude ".*" \
+          --dryrun \
+          --size-only \
+          resources/xlsx/ \
+          "s3://${{ env.REPORTING_BUCKET_NAME }}/changes/uk/"

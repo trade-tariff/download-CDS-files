@@ -1,0 +1,34 @@
+---
+repos:
+
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v5.0.0
+      hooks:
+          - id: trailing-whitespace
+          - id: end-of-file-fixer
+          - id: check-yaml
+
+    - repo: https://github.com/trufflesecurity/trufflehog
+      rev: v3.88.18
+      hooks:
+          - id: trufflehog
+
+    - repo: https://github.com/rhysd/actionlint.git
+      rev: v1.7.7
+      hooks:
+          - id: actionlint-docker
+
+    - repo: https://github.com/pycqa/flake8
+      rev: 7.0.0
+      hooks:
+          - id: flake8
+
+    - repo: https://github.com/psf/black
+      rev: 23.3.0
+      hooks:
+          - id: black
+
+    # - repo: https://github.com/pre-commit/mirrors-mypy
+    #   rev: v1.2.0
+    #   hooks:
+    #       - id: mypy
