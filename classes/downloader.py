@@ -21,10 +21,6 @@ class Downloader(object):
         self._copy_to_import_folder = int(os.getenv("COPY_TO_IMPORT_FOLDER", "0"))
         self.cds_files = []
 
-        if not self.domain.startswith("http"):
-            print("Error: GOVUK_API_DOMAIN is missing or invalid!")
-            sys.exit(1)
-
         self.get_access_token()
         self.create_ssl_unverified_context()
 
@@ -32,7 +28,7 @@ class Downloader(object):
         ssl._create_default_https_context = ssl._create_unverified_context
 
     def get_access_token(self):
-        url = f"{self.domain}/oauth/token"
+        url = self.domain + "oauth/token"
         print(f"Fetching access token from: {url}")
 
         payload = "client_secret={}&client_id={}&grant_type=client_credentials".format(
