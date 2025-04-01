@@ -66,7 +66,6 @@ jobs:
         . venv/bin/activate
         python download.py
         python parse.py
-        python ses_mailer.py
 
     - name: Store data files
       run: aws s3 sync resources/ "s3://${{ env.REPORTING_BUCKET_NAME }}/changes/uk/"\
