@@ -1,4 +1,4 @@
-XlsxWriter==3.1.6
+XlsxWriter==3.1.9
 boto3==1.28.44
 certifi==2023.7.22
 charset-normalizer==3.3.2
@@ -13,4 +13,3 @@ s3transfer==0.6.2
 six==1.16.0
 starkbank-ecdsa==2.2.0
 urllib3==2.0.6
-

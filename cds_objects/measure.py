@@ -72,10 +72,16 @@ class Measure(Master):
     def write_data(self):
         # Write the Excel
         self.worksheet.write(
-            self.row_count, 0, self.operation_text + " measure", self.xml_file.excel.format_wrap
+            self.row_count,
+            0,
+            self.operation_text + " measure",
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
-            self.row_count, 1, self.goods_nomenclature_item_id, self.xml_file.excel.format_wrap
+            self.row_count,
+            1,
+            self.goods_nomenclature_item_id,
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
             self.row_count, 2, self.additional_code, self.xml_file.excel.format_wrap
@@ -92,7 +98,9 @@ class Measure(Master):
             self.geographical_area_id + " (" + self.geographical_area_description + ")",
             self.xml_file.excel.format_wrap,
         )
-        self.worksheet.write(self.row_count, 5, self.ordernumber, self.xml_file.excel.format_wrap)
+        self.worksheet.write(
+            self.row_count, 5, self.ordernumber, self.xml_file.excel.format_wrap
+        )
         self.worksheet.write(
             self.row_count,
             6,
@@ -105,7 +113,9 @@ class Measure(Master):
             Master.format_date(self.validity_end_date),
             self.xml_file.excel.format_wrap,
         )
-        self.worksheet.write(self.row_count, 8, self.combined_duty, self.xml_file.excel.format_wrap)
+        self.worksheet.write(
+            self.row_count, 8, self.combined_duty, self.xml_file.excel.format_wrap
+        )
         self.worksheet.write(
             self.row_count, 9, self.exclusion_string, self.xml_file.excel.format_wrap
         )
@@ -113,9 +123,14 @@ class Measure(Master):
             self.row_count, 10, self.footnote_string, self.xml_file.excel.format_wrap
         )
         self.worksheet.write(
-            self.row_count, 11, self.measure_condition_string_excel, self.xml_file.excel.format_wrap
+            self.row_count,
+            11,
+            self.measure_condition_string_excel,
+            self.xml_file.excel.format_wrap,
         )
-        self.worksheet.write(self.row_count, 12, self.measure_sid, self.xml_file.excel.format_wrap)
+        self.worksheet.write(
+            self.row_count, 12, self.measure_sid, self.xml_file.excel.format_wrap
+        )
 
     def get_measure_components(self):
         measure_components = self.elem.findall("measureComponent")
