@@ -62,9 +62,13 @@ class ReferenceDataHandler(object):
 
 
 class GeographyList(object):
+    class GeographicalAreas(dict):
+        def __missing__(self, key):
+            return f"Geographical area for {key} not found"
+
     def __init__(self):
-        self.geography_dict = {}
-        self.geography_hjid_dict = {}
+        self.geography_dict = GeographyList.GeographicalAreas()
+        self.geography_hjid_dict = GeographyList.GeographicalAreas()
 
     def load(self):
         with ReferenceDataHandler(

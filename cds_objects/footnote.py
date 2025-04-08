@@ -28,7 +28,10 @@ class Footnote(Master):
     def write_data(self):
         # Write the Excel
         self.worksheet.write(
-            self.row_count, 0, self.operation_text + " footnote", self.xml_file.excel.format_wrap
+            self.row_count,
+            0,
+            self.operation_text + " footnote",
+            self.xml_file.excel.format_wrap,
         )
         self.worksheet.write(
             self.row_count,
@@ -39,7 +42,9 @@ class Footnote(Master):
         self.worksheet.write(
             self.row_count, 2, self.footnote_type_id, self.xml_file.excel.format_wrap
         )
-        self.worksheet.write(self.row_count, 3, self.footnote_id, self.xml_file.excel.format_wrap)
+        self.worksheet.write(
+            self.row_count, 3, self.footnote_id, self.xml_file.excel.format_wrap
+        )
         self.worksheet.write(
             self.row_count,
             4,
