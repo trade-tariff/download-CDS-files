@@ -1,4 +1,4 @@
-name: CI Jobs
+name: CI Workflow
 
 on:
   push:
@@ -50,38 +50,34 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    container:
-      image: python:3.12
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install system dependencies
-        run: |
-          apt-get update
-          apt-get install -y \
-          libxml2-dev \
-          libxslt-dev \
-          python3-dev \
-          awscli \
-          jq
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
-      - name: Setup Python environment
-        run: |
-          python -m venv venv
-          . venv/bin/activate && \
-          pip install --upgrade pip && \
-          pip install wheel
-
-      - name: Restore cache
+      - name: Cache dependencies
         uses: actions/cache@v4
         with:
           key: deps-1.0.0-${{ hashFiles('requirements.txt') }}
           path: venv
 
-      - name: Install dependencies
+      - name: Install system dependencies
         run: |
-            . venv/bin/activate && pip install -r requirements.txt
+          sudo apt-get update
+          sudo  apt-get install -y \
+          libxml2-dev \
+          libxslt-dev
+
+      - name: Install Python dependencies
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          pip install --upgrade pip wheel
+          pip install -r requirements.txt
 
       - name: Fetch Secrets from AWS Secrets Manager
         uses: trade-tariff/trade-tariff-tools/.github/actions/fetch-secrets@main
@@ -94,9 +90,23 @@ jobs:
           python download.py && \
           python parse.py
 
+      - name: Store data files
+        run: |
           aws s3 sync \
           --exclude ".*" \
           --dryrun \
           --size-only \
           resources/xlsx/ \
           "s3://${{ env.REPORTING_BUCKET_NAME }}/changes/uk/"
+
+      - name: Free disk space
+        run: |
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /resources
+          sudo apt-get clean
+          df -h
