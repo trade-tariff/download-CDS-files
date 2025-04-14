@@ -47,7 +47,6 @@ class XmlFile(object):
         self.get_base_regulations()
 
         self.excel.close_excel()
-
         self.mail_extract()
 
     def mail_extract(self):

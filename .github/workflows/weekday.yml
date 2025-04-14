@@ -1,4 +1,4 @@
-name: Weekday Job
+name: Weekday Workflow
 on:
   schedule:
   - cron: 00 7 * * 1,2,3,4,5
@@ -19,7 +19,6 @@ env:
   ENVIRONMENT: production
   IAM_ROLE_ARN: arn:aws:iam::382373577178:role/GithubActions-CDS-Downloader-File-Role
   REPORTING_BUCKET_NAME: trade-tariff-reporting-382373577178
-  DATA_PATH: resources/xlsx/
 
 jobs:
   email_changes:
@@ -33,18 +32,20 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libxml2-dev libxslt-dev
-
     - name: Cache dependencies
       uses: actions/cache@v4
       with:
         key: deps-1.0.0-${{ hashFiles('requirements.txt') }}
         path: venv
 
-    - name: Setup Python environment
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+        libxml2-dev \
+        libxslt-dev
+
+    - name: Install Python dependencies
       run: |
         python -m venv venv
         . venv/bin/activate && \
@@ -58,9 +59,13 @@ jobs:
         secret-name: "download-cds-files-configuration"
 
     - name: Restore data files
-      run: aws s3 sync "s3://$REPORTING_BUCKET_NAME/changes/uk/" resources/
+      run: |
+        aws s3 sync "s3://$REPORTING_BUCKET_NAME/changes/uk/" resources/ \
 
-    - name: Generate files and send email
+    - name: Run scripts
+      env:
+        SEND_MAIL: 1
+
       run: |
         touch .env
         . venv/bin/activate
@@ -68,8 +73,8 @@ jobs:
         python parse.py
 
     - name: Store data files
-      run: aws s3 sync resources/ "s3://${{ env.REPORTING_BUCKET_NAME }}/changes/uk/"\
-          ${{ env.DATA_PATH }}
+      run: |
+        aws s3 sync resources/ "s3://${{ env.REPORTING_BUCKET_NAME }}/changes/uk/"
 
   notifications:
     runs-on: ubuntu-latest
