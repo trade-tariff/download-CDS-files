@@ -10,6 +10,6 @@ python-dotenv==1.1.0
 python-http-client==3.3.7
 requests==2.32.3
 s3transfer==0.10.0
-six==1.16.0
+six==1.17.0
 starkbank-ecdsa==2.2.0
 urllib3==2.4.0
