@@ -1,19 +1,10 @@
 name: CI Workflow
 
 on:
-  push:
-    branches-ignore:
-      - main
-  pull_request:
-    branches-ignore:
-      - main
-
+  # push:
+  #   branches-ignore:
+  #     - main
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to run the workflow on'
-        required: true
-        default: 'main'
 
 permissions:
   contents: read
