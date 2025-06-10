@@ -1,9 +1,9 @@
 name: CI Workflow
 
 on:
-  # push:
-  #   branches-ignore:
-  #     - main
+  push:
+    branches-ignore:
+      - main
   workflow_dispatch:
 
 permissions:

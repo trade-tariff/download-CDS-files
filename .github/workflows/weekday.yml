@@ -3,7 +3,7 @@ on:
   schedule:
   - cron: 00 7 * * 1,2,3,4,5
   workflow_dispatch:
-  
+
 permissions:
   contents: read
   id-token: write
@@ -14,7 +14,6 @@ env:
   IAM_ROLE_ARN: arn:aws:iam::382373577178:role/GithubActions-CDS-Downloader-File-Role
   REPORTING_BUCKET_NAME: trade-tariff-reporting-382373577178
   SECRET_NAME: download-cds-files-configuration
-  SEND_MAIL: 0
 
 jobs:
   email_changes:
@@ -45,7 +44,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m venv venv
-        source venv/bin/activate 
+        source venv/bin/activate
         pip install --upgrade pip pip-tools
         if [ -f "requirements.in" ]; then
           pip-compile --output-file=requirements.txt requirements.in
@@ -57,40 +56,37 @@ jobs:
       uses: trade-tariff/trade-tariff-tools/.github/actions/fetch-secrets@main
       with:
         secret-name: ${{ env.SECRET_NAME }}
-    # - name: Restore data files
-    #   run: |
-    #     aws s3 sync "s3://$REPORTING_BUCKET_NAME/changes/uk/" resources/ \
+    - name: Restore data files
+      run: |
+        aws s3 sync "s3://$REPORTING_BUCKET_NAME/changes/uk/" resources/ \
 
     - name: Run scripts
-      # env:
-        # SEND_MAIL: 0
+      env:
+        SEND_MAIL: 1
 
       uses: nick-fields/retry@v3
-      env:
-        TEST_RETRIES: "true"  # Activate test mode
-        GITHUB_ACTIONS: "true" # Double safety check
       with:
-        timeout_minutes: 2 # 70
-        max_attempts: 3 # 5
-        retry_wait_seconds: 60 # 3600 
+        timeout_minutes: 70
+        max_attempts: 5
+        retry_wait_seconds: 3600
         shell: bash
         command: |
           touch .env
           source venv/bin/activate
           python download.py
-        # python parse.py
+          python parse.py
 
     - name: Store data files
       run: |
         aws s3 sync resources/ "s3://${{ env.REPORTING_BUCKET_NAME }}/changes/uk/"
 
-  # notifications:
-  #   runs-on: ubuntu-latest
-  #   needs: email_changes
-  #   if: always()
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: trade-tariff/trade-tariff-tools/.github/actions/slack-notify@main
-  #       with:
-  #         result: ${{ needs.email_changes.result }}
-  #         slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+  notifications:
+    runs-on: ubuntu-latest
+    needs: email_changes
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+      - uses: trade-tariff/trade-tariff-tools/.github/actions/slack-notify@main
+        with:
+          result: ${{ needs.email_changes.result }}
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
