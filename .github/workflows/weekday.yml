@@ -2,13 +2,7 @@ name: Weekday Workflow
 on:
   schedule:
   - cron: 00 7 * * 1,2,3,4,5
-
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to run the workflow on'
-        required: true
-        default: 'main'
 
 permissions:
   contents: read
@@ -51,12 +45,13 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m venv venv
-        source venv/bin/activate 
+        source venv/bin/activate
 
         pip install --upgrade pip pip-tools
 
         pip-compile --output-file=requirements.txt requirements.in
         pip-sync --quiet requirements.txt
+
     - name: Fetch Secrets from AWS Secrets Manager
       uses: trade-tariff/trade-tariff-tools/.github/actions/fetch-secrets@main
       with:
