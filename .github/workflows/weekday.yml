@@ -66,11 +66,17 @@ jobs:
       env:
         SEND_MAIL: 1
 
-      run: |
-        touch .env
-        . venv/bin/activate
-        python download.py
-        python parse.py
+      uses: nick-fields/retry@v3
+      with:
+        timeout_minutes: 30
+        max_attempts: 5
+        retry_wait_seconds: 3600
+        shell: bash
+        command: |
+          touch .env
+          source venv/bin/activate
+          python download.py
+          python parse.py
 
     - name: Store data files
       run: |
