@@ -18,12 +18,32 @@ graph TD
     F --> G[Email via SES to relevant parties]
 ```
 
+## Dependency Management
+
+We use `pip-tools` for dependency management with:
+
+- requirements.in - Main production dependencies
+- requirements_dev.in - Development tools and testing dependencies
+
+To update dependencies:
+
+```bash
+pip-compile requirements.in  # Generates requirements.txt
+pip-compile requirements_dev.in  # Generates requirements_dev.txt
+pip-sync requirements.txt requirements_dev.txt  # Syncs your environment
+```
+
 ## Getting started for local development
 
 ```bash
-python -m venv venv # Build an isolated python dev environment
-source venv/bin/activate # Activate the enviornment
-pip install -r requirements_dev.txt # Install dependencies into the environment
+python -m venv venv  # Create isolated Python environment
+source venv/bin/activate  # Activate environment
+
+# First time setup
+pip install pip-tools  # Install dependency management tools
+pip-compile requirements.in  # Generate requirements.txt
+pip-compile requirements_dev.in  # Generate requirements_dev.txt
+pip-sync requirements.txt requirements_dev.txt  # Install all dependencies
 cp .env.example .env # Copy the example .env file to configure the project
 ```
 
