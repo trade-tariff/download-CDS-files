@@ -20,16 +20,20 @@ graph TD
 
 ## Dependency Management
 
-We use `pip-tools` for dependency management with:
+We use `pip-tools` for dependency management to declare flexible dependencies in `.in` files and generate fully pinned `.txt` lock files. Our automated workflows regularly update these lock files to ensure the latest compatible versions of dependencies are installed, even if the `.in` files do not specify exact versions.
 
-- requirements.in - Main production dependencies
-- requirements_dev.in - Development tools and testing dependencies
+The process is as follows:
+
+1. Declare flexible dependencies in `requirements.in` and `requirements_dev.in` (e.g., `requests` or `requests>=2.25.0`), without strict pins.
+2. Use `pip-compile --upgrade` to generate pinned `requirements.txt` and `requirements_dev.txt` files with exact versions.
+3. Use `pip-sync` to install dependencies exactly as pinned, ensuring reproducible environments.
+4. Our CI/CD workflows run `pip-compile --upgrade` on a schedule to bump dependency versions regularly, keeping the project secure and up-to-date.
 
 To update dependencies:
 
 ```bash
-pip-compile requirements.in  # Generates requirements.txt
-pip-compile requirements_dev.in  # Generates requirements_dev.txt
+pip-compile --upgrade --output-file=requirements.txt requirements.in  # Generates requirements.txt
+pip-compile --upgrade --output-file=requirements_dev.txt requirements_dev.in  # Generates requirements_dev.txt
 pip-sync requirements.txt requirements_dev.txt  # Syncs your environment
 ```
 

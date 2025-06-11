@@ -69,9 +69,11 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-          pip install --upgrade pip pip-tools
+
+          pip install --upgrade pip==25.0.1 pip-tools
+
           pip-compile --output-file=requirements_dev.txt requirements_dev.in
-          pip-sync requirements_dev.txt
+          pip-sync --quiet requirements_dev.txt
 
       - name: Fetch Secrets from AWS Secrets Manager
         uses: trade-tariff/trade-tariff-tools/.github/actions/fetch-secrets@main
@@ -80,7 +82,7 @@ jobs:
 
       - name: Run scripts
         run: |
-          . venv/bin/activate && \
+          source venv/bin/activate && \
           python download.py && \
           python parse.py
 
