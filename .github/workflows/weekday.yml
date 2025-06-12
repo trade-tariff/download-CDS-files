@@ -49,9 +49,8 @@ jobs:
 
         pip install --upgrade pip==25.0.1 pip-tools
 
-        pip-compile --upgrade --output-file=requirements.txt requirements.in
-        pip-compile --upgrade --output-file=requirements_dev.txt requirements_dev.in
-        pip-sync --quiet requirements.txt requirements_dev.txt
+        pip-compile --output-file=requirements.txt requirements.in
+        pip-sync --quiet requirements.txt
 
     - name: Commit updated requirements.txt
       if: github.ref == 'refs/heads/main'
