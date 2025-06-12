@@ -1,0 +1,28 @@
+# AWS / cloud
+boto3
+jmespath
+s3transfer
+
+# Excel/File Handling
+XlsxWriter
+lxml
+
+# HTTP/Networking
+requests
+urllib3
+python-http-client
+idna
+
+# Security/Authentication
+certifi
+starkbank-ecdsa
+
+# Data Processing
+python-dateutil
+six
+
+# Environment/Configuration
+python-dotenv
+
+# Text Processing
+charset-normalizer

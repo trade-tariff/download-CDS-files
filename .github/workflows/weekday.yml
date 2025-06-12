@@ -2,16 +2,10 @@ name: Weekday Workflow
 on:
   schedule:
   - cron: 00 7 * * 1,2,3,4,5
-
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to run the workflow on'
-        required: true
-        default: 'main'
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 env:
@@ -19,6 +13,7 @@ env:
   ENVIRONMENT: production
   IAM_ROLE_ARN: arn:aws:iam::382373577178:role/GithubActions-CDS-Downloader-File-Role
   REPORTING_BUCKET_NAME: trade-tariff-reporting-382373577178
+  SECRET_NAME: download-cds-files-configuration
 
 jobs:
   email_changes:
@@ -35,8 +30,10 @@ jobs:
     - name: Cache dependencies
       uses: actions/cache@v4
       with:
-        key: deps-1.0.0-${{ hashFiles('requirements.txt') }}
-        path: venv
+        key: deps-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements.in') }}
+        path: |
+          ~/.cache/pip
+          venv
 
     - name: Install system dependencies
       run: |
@@ -48,15 +45,16 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m venv venv
-        . venv/bin/activate && \
-        pip install --upgrade pip && \
-        pip install wheel && \
-        pip install -r requirements.txt
+        source venv/bin/activate
 
+        pip install --upgrade pip==25.0.1 pip-tools
+
+        pip-compile --output-file=requirements.txt requirements.in
+        pip-sync --quiet requirements.txt
     - name: Fetch Secrets from AWS Secrets Manager
       uses: trade-tariff/trade-tariff-tools/.github/actions/fetch-secrets@main
       with:
-        secret-name: "download-cds-files-configuration"
+        secret-name: ${{ env.SECRET_NAME }}
 
     - name: Restore data files
       run: |

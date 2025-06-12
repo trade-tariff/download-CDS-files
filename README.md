@@ -18,12 +18,37 @@ graph TD
     F --> G[Email via SES to relevant parties]
 ```
 
+## Dependency Management
+
+We use `pip-tools` to manage Python dependencies in a reliable and reproducible way. Flexible dependency specifications are declared in `.in` files, and fully pinned `.txt` lock files are automatically generated and used during runtime.
+
+Each time the workflow runs, it compiles the `.txt` files with the latest compatible versions, ensuring up-to-date environments without manual intervention.
+
+### How it works
+
+1. Define top-level dependencies in `requirements.in` and `requirements_dev.in` using loose version specs (e.g., `requests`, `requests>=2.25.0`).
+2. Run pip-compile to resolve and pin all dependencies into `requirements.txt` and `requirements_dev.txt`.
+3. Use `pip-sync` to install exactly what’s listed in the `.txt` files—no more, no less.
+
+To update dependencies:
+
+```bash
+pip-compile --upgrade --output-file=requirements.txt requirements.in  # Generates requirements.txt
+pip-compile --upgrade --output-file=requirements_dev.txt requirements_dev.in  # Generates requirements_dev.txt
+pip-sync requirements.txt requirements_dev.txt  # Syncs your environment
+```
+
 ## Getting started for local development
 
 ```bash
-python -m venv venv # Build an isolated python dev environment
-source venv/bin/activate # Activate the enviornment
-pip install -r requirements_dev.txt # Install dependencies into the environment
+python -m venv venv  # Create isolated Python environment
+source venv/bin/activate  # Activate environment
+
+# First time setup
+pip install pip-tools  # Install dependency management tools
+pip-compile requirements.in  # Generate requirements.txt
+pip-compile requirements_dev.in  # Generate requirements_dev.txt
+pip-sync requirements.txt requirements_dev.txt  # Install all dependencies
 cp .env.example .env # Copy the example .env file to configure the project
 ```
 

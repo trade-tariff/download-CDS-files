@@ -1,0 +1,16 @@
+-r requirements.in
+
+# Code Formatting
+autopep8
+
+# Linting
+flake8
+pycodestyle
+pyflakes
+mccabe
+
+# Editor/Tooling
+pynvim
+
+# Dependency management
+pip-tools>=7.0.0
