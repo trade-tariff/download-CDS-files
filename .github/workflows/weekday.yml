@@ -55,6 +55,7 @@ jobs:
       uses: trade-tariff/trade-tariff-tools/.github/actions/fetch-secrets@main
       with:
         secret-name: ${{ env.SECRET_NAME }}
+        role-to-assume: ${{ env.IAM_ROLE_ARN }}
 
     - name: Restore data files
       run: |
