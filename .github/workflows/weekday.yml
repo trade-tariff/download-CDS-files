@@ -33,7 +33,6 @@ jobs:
         key: deps-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements.in') }}
         path: |
           ~/.cache/pip
-          venv
 
     - name: Install system dependencies
       run: |
