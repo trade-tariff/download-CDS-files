@@ -14,6 +14,7 @@ env:
   IAM_ROLE_ARN: arn:aws:iam::382373577178:role/GithubActions-CDS-Downloader-File-Role
   REPORTING_BUCKET_NAME: trade-tariff-reporting-382373577178
   SECRET_NAME: download-cds-files-configuration
+  PYTHON_VERSION: '3'
 
 jobs:
   email_changes:
@@ -25,15 +26,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
-
-    - name: Cache dependencies
-      uses: actions/cache@v4
-      with:
-        key: deps-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements.in') }}
-        path: |
-          ~/.cache/pip
-          venv
+        python-version: ${{ env.PYTHON_VERSION }}
 
     - name: Install system dependencies
       run: |
